@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useInView, type Variants, type Variant } from "framer-motion";
+import { m, useInView, type Variants, type Variant } from "framer-motion";
 
 interface AnimatedSectionProps {
     children: React.ReactNode;
@@ -55,7 +55,7 @@ export function AnimatedSection({
     };
 
     return (
-        <motion.div
+        <m.div
             ref={ref}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -63,7 +63,7 @@ export function AnimatedSection({
             className={className}
         >
             {children}
-        </motion.div>
+        </m.div>
     );
 }
 
@@ -95,7 +95,7 @@ export function StaggerContainer({
     };
 
     return (
-        <motion.div
+        <m.div
             ref={ref}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -103,7 +103,7 @@ export function StaggerContainer({
             className={className}
         >
             {children}
-        </motion.div>
+        </m.div>
     );
 }
 
@@ -126,8 +126,8 @@ export function StaggerItem({ children, className }: StaggerItemProps) {
     };
 
     return (
-        <motion.div variants={itemVariants} className={className}>
+        <m.div variants={itemVariants} className={className}>
             {children}
-        </motion.div>
+        </m.div>
     );
 }

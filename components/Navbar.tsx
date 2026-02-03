@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { m, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, Globe } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,15 @@ import { portfolioData } from "@/data/portfolio-data";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useLanguage } from "@/components/LanguageProvider";
+import { usePathname, useRouter } from "next/navigation";
 
 export function Navbar() {
     const [isScrolled, setIsScrolled] = React.useState(false);
     const { scrollY } = useScroll();
     const [activeSection, setActiveSection] = React.useState("home");
     const { language, setLanguage, direction } = useLanguage();
+    const pathname = usePathname();
+    const router = useRouter();
 
     const t = portfolioData[language];
     const navLinks = t.navLinks;
@@ -24,8 +27,12 @@ export function Navbar() {
         setIsScrolled(latest > 20);
     });
 
+    const isHome = pathname === "/";
+
     // Active section observer
     React.useEffect(() => {
+        if (!isHome) return;
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -43,12 +50,17 @@ export function Navbar() {
         });
 
         return () => observer.disconnect();
-    }, [navLinks]);
+    }, [navLinks, isHome]);
 
-    const scrollTo = (id: string) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
+    const scrollTo = (href: string) => {
+        const id = href.replace("#", "");
+        if (isHome) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+        } else {
+            router.push(`/${href.startsWith('#') ? href : '#' + id}`);
         }
     };
 
@@ -57,7 +69,7 @@ export function Navbar() {
     };
 
     return (
-        <motion.header
+        <m.header
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             className={cn(
@@ -68,9 +80,10 @@ export function Navbar() {
         >
             <div className="container px-4 md:px-6 h-16 flex items-center justify-between">
                 {/* Logo / Name */}
-                <div
-                    onClick={() => scrollTo("home")}
-                    className="group cursor-pointer flex items-center gap-3"
+                <button
+                    onClick={() => scrollTo("#home")}
+                    className="group cursor-pointer flex items-center gap-3 bg-transparent border-none p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                    aria-label={language === 'ar' ? "العودة للرئيسية" : "Back to Home"}
                 >
                     <div className="relative w-10 h-10 flex items-center justify-center">
                         <div className="absolute inset-0 bg-primary/20 rounded-xl group-hover:rotate-12 transition-transform duration-300" />
@@ -81,7 +94,7 @@ export function Navbar() {
                     <span className="hidden sm:inline-block tracking-tighter font-heading font-black text-2xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent group-hover:from-primary group-hover:to-accent transition-all duration-500">
                         {t.personalInfo.name.split(' ')[0]}
                     </span>
-                </div>
+                </button>
 
                 {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-1">
@@ -91,7 +104,7 @@ export function Navbar() {
                             <Button
                                 key={link.name}
                                 variant="ghost"
-                                onClick={() => scrollTo(link.href.replace("#", ""))}
+                                onClick={() => scrollTo(link.href)}
                                 className={cn(
                                     "relative h-9 px-4 text-sm font-medium transition-colors hover:text-primary",
                                     isActive ? "text-primary" : "text-muted-foreground"
@@ -99,7 +112,7 @@ export function Navbar() {
                             >
                                 {link.name}
                                 {isActive && (
-                                    <motion.div
+                                    <m.div
                                         layoutId="navbar-active"
                                         className="absolute inset-0 bg-primary/10 rounded-md -z-10"
                                         transition={{ type: "spring", duration: 0.5 }}
@@ -119,7 +132,7 @@ export function Navbar() {
                         className="rounded-full w-9 h-9"
                     >
                         <Globe className="w-[1.2rem] h-[1.2rem] text-primary" />
-                        <span className="sr-only">Toggle Language</span>
+                        <span className="sr-only">{language === 'en' ? "Change to Arabic" : "تغيير للإنجليزية"}</span>
                     </Button>
 
                     <ThemeToggle />
@@ -127,7 +140,7 @@ export function Navbar() {
                     {/* Mobile Menu */}
                     <Sheet>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground">
+                            <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground" aria-label={language === 'ar' ? "القائمة" : "Menu"}>
                                 <Menu className="w-5 h-5" />
                             </Button>
                         </SheetTrigger>
@@ -140,7 +153,7 @@ export function Navbar() {
                                         variant="ghost"
                                         size="lg"
                                         className="justify-start text-lg"
-                                        onClick={() => scrollTo(link.href.replace("#", ""))}
+                                        onClick={() => scrollTo(link.href)}
                                     >
                                         {link.name}
                                     </Button>
@@ -150,6 +163,6 @@ export function Navbar() {
                     </Sheet>
                 </div>
             </div>
-        </motion.header>
+        </m.header>
     );
 }

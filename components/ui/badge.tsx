@@ -4,19 +4,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-    "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[#547792] focus:ring-offset-2",
+    "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background hover:shadow-sm",
     {
         variants: {
             variant: {
                 default:
-                    "border-transparent bg-[#547792] text-white hover:bg-[#213448] dark:bg-[#94B4C1] dark:text-[#213448] dark:hover:bg-[#EAE0CF]",
+                    "border-transparent bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md shadow-sm",
                 secondary:
-                    "border-transparent bg-[#EAE0CF] text-[#213448] hover:bg-[#94B4C1]/30 dark:bg-[#213448] dark:text-[#94B4C1] dark:hover:bg-[#547792]/30",
+                    "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-md shadow-sm",
                 destructive:
-                    "border-transparent bg-red-500 text-white hover:bg-red-600",
-                outline: "text-[#213448] border-[#94B4C1] dark:text-[#EAE0CF] dark:border-[#547792]",
+                    "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80 hover:shadow-md shadow-sm",
+                outline: "text-foreground border-primary/60 hover:bg-primary/15 hover:border-primary hover:shadow-md dark:hover:bg-primary/25",
                 gradient:
-                    "border-transparent bg-gradient-to-r from-[#547792]/20 to-[#94B4C1]/20 text-[#547792] dark:from-[#547792]/30 dark:to-[#94B4C1]/30 dark:text-[#94B4C1]",
+                    "border-transparent bg-gradient-to-r from-primary/20 to-accent/20 text-primary dark:from-primary/30 dark:to-accent/30 dark:text-primary border-primary/10 hover:shadow-md",
             },
         },
         defaultVariants: {

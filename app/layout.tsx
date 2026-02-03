@@ -21,9 +21,46 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Yousef Abdrabboh | Full-Stack Developer",
-  description: "Professional portfolio of Yousef Abdrabboh",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://yousef-abdrabboh.vercel.app"),
+  title: {
+    default: "Yousef Abdrabboh | Full-Stack Developer",
+    template: "%s | Yousef Abdrabboh",
+  },
+  description: "Professional portfolio of Yousef Abdrabboh - Full-Stack Developer specializing in React, Next.js, and modern web technologies. View my projects, skills, and get in touch.",
+  keywords: ["Full-Stack Developer", "React Developer", "Next.js", "Web Development", "Portfolio", "Yousef Abdrabboh", "Frontend Developer", "Backend Developer"],
+  authors: [{ name: "Yousef Abdrabboh" }],
+  creator: "Yousef Abdrabboh",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    alternateLocale: "ar_EG",
+    title: "Yousef Abdrabboh | Full-Stack Developer",
+    description: "Professional portfolio showcasing web development projects and skills.",
+    siteName: "Yousef Abdrabboh Portfolio",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yousef Abdrabboh | Full-Stack Developer",
+    description: "Professional portfolio showcasing web development projects and skills.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    // Add your Google Search Console verification code if you have one
+    // google: "your-verification-code",
+  },
 };
+
+import { LazyMotion, domAnimation } from "framer-motion";
 
 export default function RootLayout({
   children,
@@ -33,21 +70,37 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="light">
       <head>
+        {/* Preconnect to external resources */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Preload critical assets */}
+        <link rel="preload" href="/my-image-without-background.png" as="image" type="image/png" />
+        
+        {/* PWA manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        
+        {/* Theme color for mobile browsers */}
+        <meta name="theme-color" content="#3E5D75" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0d1520" media="(prefers-color-scheme: dark)" />
+        
+        {/* Apple touch icon */}
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        
+        {/* Theme initialization script */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
                   var theme = localStorage.getItem('portfolio-theme');
-                  if (theme === 'dark') {
-                    document.documentElement.classList.remove('light');
+                  var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'dark' || (!theme && supportDarkMode)) {
                     document.documentElement.classList.add('dark');
-                  } else if (theme === 'light') {
-                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.remove('light');
+                  } else {
                     document.documentElement.classList.add('light');
-                  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    document.documentElement.classList.remove('light');
-                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('dark');
                   }
                 } catch (e) {}
               })();
@@ -61,20 +114,22 @@ export default function RootLayout({
       >
         <LanguageProvider>
           <ThemeProvider defaultTheme="light" storageKey="portfolio-theme">
-            {/* Note: User must run 'npx convex dev' to generate the URL */}
-            {process.env.NEXT_PUBLIC_CONVEX_URL ? (
-              <ConvexClientProvider>
-                <Navbar />
-                <main>{children}</main>
-                <Footer />
-              </ConvexClientProvider>
-            ) : (
-              <>
-                <Navbar />
-                <main>{children}</main>
-                <Footer />
-              </>
-            )}
+            <LazyMotion features={domAnimation}>
+              {/* Note: User must run 'npx convex dev' to generate the URL */}
+              {process.env.NEXT_PUBLIC_CONVEX_URL ? (
+                <ConvexClientProvider>
+                  <Navbar />
+                  <main>{children}</main>
+                  <Footer />
+                </ConvexClientProvider>
+              ) : (
+                <>
+                  <Navbar />
+                  <main>{children}</main>
+                  <Footer />
+                </>
+              )}
+            </LazyMotion>
           </ThemeProvider>
         </LanguageProvider>
       </body>

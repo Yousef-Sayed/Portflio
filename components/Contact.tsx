@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, MapPin, Send, Github, Linkedin, Facebook, Check, Phone, ArrowUpRight } from "lucide-react";
+import { m, AnimatePresence } from "framer-motion";
+import { Mail, MapPin, Send, Github, Linkedin, Facebook, Check, ArrowUpRight } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
@@ -14,8 +14,11 @@ import { portfolioData, socialLinks } from "@/data/portfolio-data";
 import { useLanguage } from "@/components/LanguageProvider";
 import { cn } from "@/lib/utils";
 
+// Type alias for translation data
+type TranslationData = typeof portfolioData.en;
+
 // Component that safely uses Convex hook
-function ConvexContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: any, onSuccess: () => void }) {
+function ConvexContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: TranslationData, onSuccess: () => void }) {
     const sendMessage = useMutation(api.messages.send);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -31,8 +34,8 @@ function ConvexContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: any, on
                 message: formData.get("message") as string,
             });
             onSuccess();
-        } catch (error) {
-            console.error("Convex error:", error);
+        } catch {
+            // Error handled silently - form submission failed
         } finally {
             setIsSubmitting(false);
         }
@@ -49,7 +52,7 @@ function ConvexContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: any, on
 }
 
 // Component for local submission (fallback)
-function LocalContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: any, onSuccess: () => void }) {
+function LocalContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: TranslationData, onSuccess: () => void }) {
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -71,7 +74,7 @@ function LocalContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: any, onS
 }
 
 // Fixed Shared Form Layout to actually include the form elements
-function FormLayout({ isRTL, t, onSubmit, isSubmitting }: { isRTL: boolean, t: any, onSubmit: any, isSubmitting: boolean }) {
+function FormLayout({ isRTL, t, onSubmit, isSubmitting }: { isRTL: boolean, t: TranslationData, onSubmit: React.FormEventHandler<HTMLFormElement>, isSubmitting: boolean }) {
     return (
         <Card className="border-none bg-background/40 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] relative">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -z-10" />
@@ -159,7 +162,7 @@ export function Contact() {
 
                         {/* Header & Info Side */}
                         <div className="lg:col-span-2 space-y-12">
-                            <motion.div
+                            <m.div
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
@@ -179,14 +182,14 @@ export function Contact() {
                                 <p className="text-lg md:text-xl text-muted-foreground/80 leading-relaxed font-light">
                                     {t.contact.subtitle}
                                 </p>
-                            </motion.div>
+                            </m.div>
 
                             <div className="space-y-6">
                                 {[
                                     { icon: Mail, label: t.contact.form.email, value: t.personalInfo.email, link: `mailto:${t.personalInfo.email}`, color: "bg-blue-500/10 text-blue-500" },
                                     { icon: MapPin, label: language === 'ar' ? 'الموقع' : 'Location', value: t.personalInfo.location, link: null, color: "bg-red-500/10 text-red-500" }
                                 ].map((item, i) => (
-                                    <motion.div
+                                    <m.div
                                         key={i}
                                         initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
                                         whileInView={{ opacity: 1, x: 0 }}
@@ -210,15 +213,15 @@ export function Contact() {
                                                 )}
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </m.div>
                                 ))}
                             </div>
 
                             <div className="space-y-6 pt-4">
-                                <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">{t.contact.followMe}</h4>
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">{t.contact.followMe}</h3>
                                 <div className="flex flex-wrap gap-4">
-                                    {socialLinks.map((link, i) => (
-                                        <motion.a
+                                    {socialLinks.map((link) => (
+                                        <m.a
                                             key={link.name}
                                             href={link.url}
                                             target="_blank"
@@ -226,12 +229,13 @@ export function Contact() {
                                             whileHover={{ y: -5, scale: 1.1 }}
                                             whileTap={{ scale: 0.95 }}
                                             className="w-14 h-14 rounded-2xl bg-secondary/20 border border-border/50 flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm"
+                                            aria-label={language === 'ar' ? `تابعني على ${link.name}` : `Follow me on ${link.name}`}
                                         >
                                             {link.icon === "github" && <Github className="w-6 h-6" />}
                                             {link.icon === "linkedin" && <Linkedin className="w-6 h-6" />}
                                             {link.icon === "facebook" && <Facebook className="w-6 h-6" />}
                                             {link.icon === "mail" && <Mail className="w-6 h-6" />}
-                                        </motion.a>
+                                        </m.a>
                                     ))}
                                 </div>
                             </div>
@@ -239,7 +243,7 @@ export function Contact() {
 
                         {/* Form Side */}
                         <div className="lg:col-span-3">
-                            <motion.div
+                            <m.div
                                 initial={{ opacity: 0, x: isRTL ? -50 : 50 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
@@ -248,7 +252,7 @@ export function Contact() {
                             >
                                 <AnimatePresence mode="wait">
                                     {isSuccess ? (
-                                        <motion.div
+                                        <m.div
                                             key="success"
                                             initial={{ opacity: 0, scale: 0.9 }}
                                             animate={{ opacity: 1, scale: 1 }}
@@ -269,7 +273,7 @@ export function Contact() {
                                             >
                                                 {language === 'ar' ? 'إرسال رسالة أخرى' : 'Send another message'}
                                             </Button>
-                                        </motion.div>
+                                        </m.div>
                                     ) : (
                                         <div key="form">
                                             {hasConvex ? (
@@ -280,7 +284,7 @@ export function Contact() {
                                         </div>
                                     )}
                                 </AnimatePresence>
-                            </motion.div>
+                            </m.div>
                         </div>
 
                     </div>

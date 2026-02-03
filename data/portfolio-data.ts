@@ -1,5 +1,6 @@
 export interface Project {
     id: string;
+    slug: string; // URL-friendly identifier
     title: string;
     description: string;
     image: string;
@@ -42,11 +43,6 @@ export const socialLinks: SocialLink[] = [
         url: "https://github.com/Yousef-Sayed/",
         icon: "github",
     },
-    // {
-    //     name: "LinkedIn",
-    //     url: "https://linkedin.com",
-    //     icon: "linkedin",
-    // },
     {
         name: "Email",
         url: "mailto:youssefabdrabooh@gmail.com",
@@ -110,6 +106,7 @@ export const portfolioData = {
         projects: [
             {
                 id: "henta",
+                slug: "henta",
                 title: "Henta",
                 platform: "Mobile App",
                 description: "A professional mobile application for book management allowing users to browse, purchase, and organize collections. Features a multi-auth system and secure payment integration.",
@@ -119,7 +116,8 @@ export const portfolioData = {
                 featured: true,
             },
             {
-                id: "egy-pen",
+                id: "egy-pin",
+                slug: "egy-pin",
                 title: "EGY-PIN",
                 platform: "Website / Mobile App",
                 description: "A comprehensive platform for exploring tourist attractions across Egypt. Supports paid subscriptions for spot listings and interactive mapping via Google Maps API.",
@@ -131,6 +129,7 @@ export const portfolioData = {
             },
             {
                 id: "caeser",
+                slug: "caeser",
                 title: "Caeser",
                 platform: "Mobile App",
                 description: "Specialized marketplace for car spare parts. Features point rewards, location-based branch discovery, and roadside assistance services with full bilingual support.",
@@ -141,6 +140,7 @@ export const portfolioData = {
             },
             {
                 id: "maxliss",
+                slug: "maxliss",
                 title: "Maxliss",
                 platform: "Website / Mobile App",
                 description: "Advanced booking platform for hair treatment specialists. Includes specialist tracking for safety, salon reservations, live chat, and SOS emergency features.",
@@ -152,6 +152,7 @@ export const portfolioData = {
             },
             {
                 id: "hesperdes",
+                slug: "hesperdes",
                 title: "Hesperdes",
                 platform: "Website",
                 description: "University management system featuring a React frontend and Laravel backend. Includes a flexible CMS and a robust admin dashboard for academic administration.",
@@ -162,6 +163,7 @@ export const portfolioData = {
             },
             {
                 id: "al-omar",
+                slug: "al-omar",
                 title: "Al-Omar Law Firm",
                 platform: "Website",
                 description: "Official web presence for a prestigious law firm, designed with a professional legal aesthetic and structured content optimized for legal practitioners.",
@@ -260,6 +262,7 @@ export const portfolioData = {
         projects: [
             {
                 id: "henta",
+                slug: "henta",
                 title: "Henta",
                 platform: "تطبيق موبايل",
                 description: "تطبيق موبايل احترافي لإدارة الكتب يتيح للمستخدمين تصفح وشراء وتنظيم مجموعاتهم الخاصة. يتميز بنظام مصادقة متعدد الأدوار ونظام دفع آمن متكامل.",
@@ -269,7 +272,8 @@ export const portfolioData = {
                 featured: true,
             },
             {
-                id: "egy-pen",
+                id: "egy-pin",
+                slug: "egy-pin",
                 title: "EGY-PEN",
                 platform: "موقع إلكتروني / تطبيق موبايل",
                 description: "منصة شاملة لاستكشاف المعالم السياحية في جميع أنحاء مصر. تدعم الاشتراكات المدفوعة لإدراج الأماكن وخدمة خرائط تفاعلية عبر Google Maps API.",
@@ -281,6 +285,7 @@ export const portfolioData = {
             },
             {
                 id: "caeser",
+                slug: "caeser",
                 title: "Caeser",
                 platform: "تطبيق موبايل",
                 description: "متجر متخصص لقطع غيار السيارات. يتميز بنظام نقاط ومكافآت، واكتشاف الفروع القريبة بناءً على الموقع، وخدمات إنقاذ الطرق مع دعم كامل للغتين.",
@@ -291,6 +296,7 @@ export const portfolioData = {
             },
             {
                 id: "maxliss",
+                slug: "maxliss",
                 title: "Maxliss",
                 platform: "موقع إلكتروني / تطبيق موبايل",
                 description: "منصة حجز متطورة لخبراء علاج الشعر. تتضمن تتبع المتخصصين لضمان السلامة، وحجز الصالونات، والدردشة المباشرة، وميزات طوارئ SOS.",
@@ -302,6 +308,7 @@ export const portfolioData = {
             },
             {
                 id: "hesperdes",
+                slug: "hesperdes",
                 title: "Hesperdes",
                 platform: "موقع إلكتروني",
                 description: "نظام إدارة جامعي يتميز بواجهة React وخلفية Laravel. يتضمن نظاماً مرناً لإدارة المحتوى ولوحة تحكم قوية للإدارة الأكاديمية.",
@@ -312,6 +319,7 @@ export const portfolioData = {
             },
             {
                 id: "al-omar",
+                slug: "al-omar",
                 title: "مكتب العمر للمحاماة",
                 platform: "موقع إلكتروني",
                 description: "الموقع الرسمي لمكتب محاماة مرموق، مصمم بجمالية قانونية احترافية ومحتوى منظم مخصص للممارسين القانونيين.",

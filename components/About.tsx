@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Briefcase, Code, Database, Layout, Server, Sparkles } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { portfolioData } from "@/data/portfolio-data";
 import { useLanguage } from "@/components/LanguageProvider";
 
-// Icon Mapping for common tech
 // Icon Mapping for common tech
 function SkillIcon({ name, className }: { name: string, className?: string }) {
     const iconProps = { className: className || "w-4 h-4", strokeWidth: 2.5 };
@@ -36,18 +35,18 @@ function SkillIcon({ name, className }: { name: string, className?: string }) {
 
 function SkillBadge({ name, color }: { name: string, color: "primary" | "accent" }) {
     return (
-        <motion.div
+        <m.div
             whileHover={{ scale: 1.1, y: -5 }}
             whileTap={{ scale: 0.95 }}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 cursor-default shadow-sm hover:shadow-md
                 ${color === 'primary'
-                    ? 'bg-primary/5 border-primary/20 text-foreground hover:bg-primary hover:text-white hover:border-primary'
-                    : 'bg-accent/5 border-accent/20 text-foreground hover:bg-accent hover:text-white hover:border-accent'
+                    ? 'bg-primary/5 border-primary/20 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary'
+                    : 'bg-accent/5 border-accent/20 text-foreground hover:bg-accent hover:text-accent-foreground hover:border-accent'
                 }`}
         >
             <SkillIcon name={name} className="w-4 h-4" />
             <span className="font-semibold text-sm tracking-tight">{name}</span>
-        </motion.div>
+        </m.div>
     );
 }
 
@@ -66,18 +65,13 @@ export function About() {
         }
     };
 
-    const item = {
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0 }
-    };
-
     return (
         <section id="about" className="py-24 md:py-32 bg-background relative overflow-hidden" dir={direction}>
             {/* Background decoration */}
-            <div className="absolute top-1/2 left-0 w-full h-[500px] bg-secondary/10 -skew-y-6 -z-10" />
+            <div className="absolute top-1/2 left-0 w-full h-[500px] bg-secondary/10 -skew-y-6 -z-10" aria-hidden="true" />
 
             <div className="container px-4 md:px-6">
-                <motion.div
+                <m.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -89,7 +83,7 @@ export function About() {
                     <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
                         {t.about.subtitle}
                     </p>
-                </motion.div>
+                </m.div>
 
                 <div className="grid lg:grid-cols-12 gap-12">
 
@@ -104,7 +98,7 @@ export function About() {
 
                         <div className={`relative ${isRTL ? 'border-r-2 mr-4 pr-10' : 'border-l-2 ml-4 pl-10'} border-primary/20 space-y-12`}>
                             {t.experience.map((job, index) => (
-                                <motion.div
+                                <m.div
                                     key={job.id}
                                     initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
                                     whileInView={{ opacity: 1, x: 0 }}
@@ -133,7 +127,7 @@ export function About() {
                                             </p>
                                         </CardContent>
                                     </Card>
-                                </motion.div>
+                                </m.div>
                             ))}
                         </div>
                     </div>
@@ -147,7 +141,7 @@ export function About() {
                             {t.about.skillsTitle}
                         </h3>
 
-                        <motion.div
+                        <m.div
                             variants={container}
                             initial="hidden"
                             whileInView="show"
@@ -190,7 +184,7 @@ export function About() {
                                 </CardContent>
                             </Card>
 
-                        </motion.div>
+                        </m.div>
                     </div>
 
                 </div>

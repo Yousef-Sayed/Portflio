@@ -3,10 +3,14 @@
 @layer base {
   :root {
     /* Palette Definition */
-    --palette-primary: 197 28% 67%;    /* #94B4C1 */
-    --palette-secondary: 38 35% 86%;   /* #EAE0CF */
-    --palette-dark: 211 37% 21%;       /* #213448 */
-    --palette-accent: 206 27% 45%;     /* #547792 */
+    --palette-primary: 206 27% 38%;
+    /* #3E5D75 - Passes contrast with white text */
+    --palette-secondary: 38 35% 86%;
+    /* #EAE0CF */
+    --palette-dark: 211 37% 21%;
+    /* #213448 */
+    --palette-accent: 197 28% 40%;
+    /* #497282 */
 
     /* Light Mode Mapping */
     --background: 0 0% 100%;
@@ -19,13 +23,15 @@
     --popover-foreground: var(--palette-dark);
 
     --primary: var(--palette-primary);
-    --primary-foreground: var(--palette-dark);
+    --primary-foreground: 0 0% 100%;
+    /* Changed to white for 4.5:1 ratio */
 
     --secondary: var(--palette-secondary);
     --secondary-foreground: var(--palette-dark);
 
     --muted: var(--palette-secondary);
-    --muted-foreground: 211 20% 45%; 
+    --muted-foreground: 211 18% 35%;
+    /* #4A5D6B - Balanced for readability */
 
     --accent: var(--palette-accent);
     --accent-foreground: 0 0% 100%;
@@ -42,33 +48,43 @@
 
   .dark {
     /* Optimized Dark Mode Mapping for High Contrast & Professionalism */
-    --background: 211 40% 10%; /* Much deeper dark */
-    --foreground: 38 40% 98%; /* Near white beige */
+    --background: 211 40% 6%;
+    /* Deeper dark for better depth */
+    --foreground: 38 40% 98%;
+    /* Crisp off-white */
 
-    --card: 211 37% 13%; /* Subtle elevation */
+    --card: 211 37% 10%;
+    /* Subtle elevation */
     --card-foreground: 38 40% 98%;
 
-    --popover: 211 40% 10%;
+    --popover: 211 40% 8%;
     --popover-foreground: 38 40% 98%;
 
-    --primary: 197 45% 75%; /* More vibrant blue for dark mode visibility */
-    --primary-foreground: 211 40% 10%;
+    --primary: 197 60% 70%;
+    /* Brightened blue for dark mode contrast */
+    --primary-foreground: 211 40% 6%;
+    /* Matching deep dark background */
 
-    --secondary: 211 30% 20%;
-    --secondary-foreground: 38 40% 98%;
+    --secondary: 211 30% 16%;
+    --secondary-foreground: 38 40% 95%;
 
-    --muted: 211 30% 15%;
-    --muted-foreground: 197 20% 80%;
+    --muted: 211 30% 12%;
+    --muted-foreground: 197 20% 75%;
 
-    --accent: 206 45% 65%; /* Clear accent */
+    --accent: 206 55% 60%;
+    /* Clearer accent */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 211 30% 25%;
-    --input: 211 30% 25%;
-    --ring: var(--palette-primary);
+    --border: 211 30% 20%;
+    --input: 211 30% 20%;
+    --ring: 197 60% 70%;
+  }
+
+  .glass {
+    @apply bg-background/40 backdrop-blur-md border border-white/10 dark:border-white/5 shadow-xl;
   }
 }
 
@@ -107,13 +123,13 @@
   --radius-lg: var(--radius);
 
   --font-sans: var(--font-inter), var(--font-cairo), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
 }
 
 @layer base {
   * {
-    @apply border-border transition-colors duration-300;
+    @apply border-border/50 transition-colors duration-300;
   }
+
   body {
     @apply bg-background text-foreground overflow-x-hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -124,22 +140,24 @@
   html[lang="ar"] body {
     font-family: var(--font-cairo), var(--font-inter), system-ui, sans-serif;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
 
   /* Global selection colors matching brand identity */
   ::selection {
-    @apply bg-primary/30 text-foreground;
+    @apply bg-primary text-primary-foreground;
   }
 
   ::-moz-selection {
-    @apply bg-primary/30 text-foreground;
+    @apply bg-primary text-primary-foreground;
   }
 
   /* Global hover improvements */
-  button, a, .card {
+  button,
+  a,
+  .card {
     @apply transition-all duration-300 ease-out;
   }
 }
@@ -159,8 +177,13 @@
 
 /* Custom Animations */
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-spin-slow {
@@ -168,11 +191,91 @@
 }
 
 @keyframes gradient-x {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .animate-gradient-x {
   background-size: 200% 200%;
   animation: gradient-x 15s ease infinite;
+}
+
+/* Enhanced Button Styling for Accessibility & Contrast */
+button,
+[role="button"],
+a[class*="button"] {
+  @apply relative;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+}
+
+/* SVG icons in buttons */
+button svg,
+[role="button"] svg,
+a[class*="button"] svg {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Focus visible improvements with better visibility */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* Smooth state transitions */
+button:active,
+[role="button"]:active {
+  transition-duration: 0.1s;
+}
+
+.dark button:focus-visible,
+.dark [role="button"]:focus-visible,
+.dark a[class*="button"]:focus-visible {
+  @apply ring-primary/80;
+}
+
+/* Mobile touch optimization for buttons */
+@media (max-width: 640px) {
+  button,
+  [role="button"],
+  a[class*="button"] {
+    @apply min-h-[44px] min-w-[44px];
+    /* Ensures minimum touch target size per WCAG standards */
+  }
+  
+  button:active,
+  [role="button"]:active,
+  a[class*="button"]:active {
+    transition-duration: 0.1s;
+  }
+}
+
+/* Ensure text doesn't get cut off on smaller screens */
+@media (max-width: 480px) {
+  button span,
+  [role="button"] span,
+  a[class*="button"] span {
+    @apply line-clamp-1;
+  }
+}
+
+/* Prefer reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  button,
+  [role="button"],
+  a[class*="button"],
+  button svg,
+  [role="button"] svg,
+  a[class*="button"] svg {
+    transition: none !important;
+    animation: none !important;
+  }
 }

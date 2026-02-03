@@ -8,7 +8,6 @@ interface LanguageProviderState {
     language: Language;
     setLanguage: (language: Language) => void;
     direction: "ltr" | "rtl";
-    t: (key: string) => string;
 }
 
 const LanguageContext = React.createContext<LanguageProviderState | undefined>(
@@ -35,7 +34,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             language,
             setLanguage,
             direction: (language === "ar" ? "rtl" : "ltr") as "rtl" | "ltr",
-            t: (key: string) => key, // Placeholder for now, real translation logic happens in components via data selection
         }),
         [language, setLanguage]
     );

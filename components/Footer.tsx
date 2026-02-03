@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Laptop } from "lucide-react";
+import { Laptop } from "lucide-react";
 
 import { portfolioData } from "@/data/portfolio-data";
 import { useLanguage } from "@/components/LanguageProvider";

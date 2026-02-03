@@ -1,0 +1,11 @@
+# Robots.txt for Yousef Abdrabboh Portfolio
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://yousef-abdrabboh.vercel.app/sitemap.xml
+
+# Disallow admin/api routes if any
+Disallow: /api/

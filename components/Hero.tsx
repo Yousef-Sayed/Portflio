@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ArrowDown, Download, Send, MousePointer2 } from "lucide-react";
+import { m, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { Download, Send, MousePointer2 } from "lucide-react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
@@ -24,8 +24,17 @@ export function Hero() {
     const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
     const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
 
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const rectRef = React.useRef<DOMRect | null>(null);
+
     const handleMouseMove = (e: React.MouseEvent) => {
-        const rect = e.currentTarget.getBoundingClientRect();
+        if (!rectRef.current && containerRef.current) {
+            rectRef.current = containerRef.current.getBoundingClientRect();
+        }
+
+        const rect = rectRef.current;
+        if (!rect) return;
+
         const width = rect.width;
         const height = rect.height;
         const mouseX = e.clientX - rect.left;
@@ -39,6 +48,7 @@ export function Hero() {
     };
 
     const handleMouseLeave = () => {
+        rectRef.current = null;
         x.set(0);
         y.set(0);
     };
@@ -54,7 +64,7 @@ export function Hero() {
             dir={direction}
         >
             {/* Background Orbs with strict clipping */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden="true">
                 <div className="absolute top-1/4 -left-32 w-64 md:w-80 h-64 md:h-80 bg-primary/10 rounded-full blur-[80px] md:blur-[100px] animate-pulse" />
                 <div className="absolute bottom-1/4 -right-36 w-72 md:w-96 h-72 md:h-96 bg-accent/10 rounded-full blur-[100px] md:blur-[120px] animate-pulse" />
             </div>
@@ -63,7 +73,7 @@ export function Hero() {
                 <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
 
                     {/* Text Content */}
-                    <motion.div
+                    <m.div
                         initial={{ opacity: 0, x: isRTL ? 100 : -100 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -114,7 +124,7 @@ export function Hero() {
                                 className="glass group"
                                 asChild
                             >
-                                <a href={t.personalInfo.resumeUrl} download>
+                                <a href={t.personalInfo.resumeUrl} download aria-label={language === 'ar' ? "تحميل السيرة الذاتية" : "Download Resume"}>
                                     <Download className="w-5 h-5 group-hover:bounce transition-transform" />
                                     {t.hero.downloadBtn}
                                 </a>
@@ -133,10 +143,11 @@ export function Hero() {
                                 <span className="text-xs uppercase tracking-widest leading-none">{language === 'ar' ? "مشروع\nمنجز" : "Projects\nCompleted"}</span>
                             </div>
                         </div>
-                    </motion.div>
+                    </m.div>
 
                     {/* Hero Image - Soft 3D Style */}
-                    <motion.div
+                    <m.div
+                        ref={containerRef}
                         style={{ rotateX, rotateY, perspective: 1000 }}
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
@@ -149,10 +160,10 @@ export function Hero() {
                         <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent/20 rounded-[3rem] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                         {/* Card Base */}
-                        <div className="absolute inset-4 rounded-[4rem] bg-gradient-to-br from-secondary/40 to-background/40 backdrop-blur-3xl border border-white/20 shadow-2xl transition-transform duration-500 group-hover:translate-z-10" />
+                        <div className="absolute inset-4 rounded-[4rem] glass shadow-2xl transition-transform duration-500 group-hover:translate-z-10" />
 
                         {/* Abstract Shapes behind image */}
-                        <motion.div
+                        <m.div
                             animate={{
                                 rotate: [0, 90, 180, 270, 360],
                                 scale: [1, 1.1, 1],
@@ -163,57 +174,61 @@ export function Hero() {
 
                         {/* Profile Image with 3D Pop */}
                         <div className="relative w-full h-full flex items-center justify-center p-8 preserve-3d">
-                            <motion.div
+                            <m.div
                                 className="relative w-full h-full drop-shadow-[0_25px_50px_rgba(0,0,0,0.3)] group-hover:scale-105 transition-transform duration-500 transform translate-z-20"
                             >
                                 <Image
                                     src={t.personalInfo.avatar}
-                                    alt={t.personalInfo.name}
+                                    alt={language === 'ar' ? `صورة ${t.personalInfo.name}` : `Professional portrait of ${t.personalInfo.name}`}
                                     fill
                                     className="object-contain"
                                     priority
+                                    sizes="(max-width: 768px) 280px, (max-width: 1200px) 450px, 550px"
                                 />
-                            </motion.div>
+                            </m.div>
 
                             {/* Floating Decorative Elements */}
-                            <motion.div
+                            <m.div
                                 animate={{ y: [0, -15, 0] }}
                                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                className="absolute top-1/4 right-0 w-16 md:w-20 h-16 md:h-20 bg-primary/20 rounded-2xl backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg translate-z-40 rotate-12"
+                                className="absolute top-1/4 right-0 w-16 md:w-20 h-16 md:h-20 glass rounded-2xl flex items-center justify-center shadow-lg translate-z-40 rotate-12"
                             >
                                 <CodeIcon className="w-8 h-8 md:w-10 md:h-10 text-primary" />
-                            </motion.div>
-                            <motion.div
+                            </m.div>
+                            <m.div
                                 animate={{ y: [0, 20, 0] }}
                                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                                className="absolute bottom-1/4 left-0 w-14 md:w-16 h-14 md:h-16 bg-accent/20 rounded-full backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg translate-z-30 -rotate-12"
+                                className="absolute bottom-1/4 left-0 w-14 md:w-16 h-14 md:h-16 glass rounded-full flex items-center justify-center shadow-lg translate-z-30 -rotate-12"
                             >
                                 <MousePointer2 className="w-6 h-6 md:w-8 md:h-8 text-accent" />
-                            </motion.div>
+                            </m.div>
                         </div>
-                    </motion.div>
+                    </m.div>
                 </div>
             </div>
 
             {/* Scroll Indicator */}
-            <motion.div
+            <m.div
                 initial={{ opacity: 0, y: 0 }}
                 animate={{ opacity: 1, y: 10 }}
                 transition={{ delay: 2, duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer group"
-                onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
+                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 group"
             >
                 <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground group-hover:text-primary transition-colors">
                     {language === 'ar' ? "استكشف" : "Explore"}
                 </span>
-                <div className="w-5 h-9 rounded-full border-2 border-muted-foreground/30 flex justify-center p-1 group-hover:border-primary transition-colors">
-                    <motion.div
+                <button
+                    onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
+                    className="w-5 h-9 rounded-full border-2 border-muted-foreground/30 flex justify-center p-1 group-hover:border-primary transition-colors bg-transparent cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    aria-label={language === 'ar' ? "انزل للأسفل" : "Scroll Down"}
+                >
+                    <m.div
                         animate={{ y: [0, 12, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                         className="w-1 h-2 bg-muted-foreground group-hover:bg-primary rounded-full"
                     />
-                </div>
-            </motion.div>
+                </button>
+            </m.div>
         </section>
     );
 }
