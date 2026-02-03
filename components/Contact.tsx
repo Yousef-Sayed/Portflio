@@ -155,7 +155,7 @@ export function Contact() {
 
             <div className="container px-4 md:px-6 relative z-10">
                 <div className="max-w-6xl mx-auto">
-                    <div className="grid lg:grid-cols-5 gap-16 items-start">
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
 
                         {/* Header & Info Side */}
                         <div className="lg:col-span-2 space-y-12">
@@ -166,17 +166,17 @@ export function Contact() {
                                 transition={{ duration: 0.6 }}
                                 className="space-y-6"
                             >
-                                <div className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-bold tracking-widest uppercase rounded-lg">
+                                <div className="inline-block px-3 py-1 md:px-4 md:py-1.5 bg-primary/10 text-primary text-[10px] md:text-sm font-bold tracking-widest uppercase rounded-lg">
                                     {language === 'ar' ? "تواصل معي" : "Get in Touch"}
                                 </div>
-                                <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground font-heading leading-tight">
+                                <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-foreground font-heading leading-tight">
                                     {t.contact.title.split(' ').map((word, i) => (
                                         <span key={i} className={i % 2 === 1 ? "text-primary dark:text-primary" : ""}>
                                             {word}{' '}
                                         </span>
                                     ))}
                                 </h2>
-                                <p className="text-xl text-muted-foreground/80 leading-relaxed font-light">
+                                <p className="text-lg md:text-xl text-muted-foreground/80 leading-relaxed font-light">
                                     {t.contact.subtitle}
                                 </p>
                             </motion.div>
@@ -192,21 +192,21 @@ export function Contact() {
                                         whileInView={{ opacity: 1, x: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ delay: i * 0.1 }}
-                                        className="group p-6 rounded-3xl bg-secondary/10 border border-border/50 hover:bg-secondary/20 transition-all cursor-default"
+                                        className="group p-5 md:p-6 rounded-3xl bg-secondary/10 border border-border/50 hover:bg-secondary/20 transition-all cursor-default"
                                     >
-                                        <div className="flex items-center gap-6">
-                                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform", item.color)}>
-                                                <item.icon className="w-7 h-7" />
+                                        <div className="flex items-center gap-4 md:gap-6">
+                                            <div className={cn("w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform", item.color)}>
+                                                <item.icon className="w-6 h-6 md:w-7 md:h-7" />
                                             </div>
-                                            <div className="flex-grow">
-                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                                            <div className="flex-grow min-w-0">
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
                                                 {item.link ? (
-                                                    <a href={item.link} className="text-xl font-bold text-foreground hover:text-primary transition-colors flex items-center gap-2">
+                                                    <a href={item.link} className="text-lg md:text-xl font-bold text-foreground hover:text-primary transition-colors flex items-center gap-2 break-all sm:break-normal">
                                                         {item.value}
-                                                        <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                        <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                                                     </a>
                                                 ) : (
-                                                    <p className="text-xl font-bold text-foreground">{item.value}</p>
+                                                    <p className="text-lg md:text-xl font-bold text-foreground break-words">{item.value}</p>
                                                 )}
                                             </div>
                                         </div>
