@@ -53,9 +53,11 @@ export function Hero() {
             className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-10 bg-gradient-to-br from-background via-background to-primary/5"
             dir={direction}
         >
-            {/* Background Orbs */}
-            <div className="absolute top-1/4 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px] animate-pulse" />
-            <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/10 rounded-full blur-[120px] animate-pulse" />
+            {/* Background Orbs with strict clipping */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+                <div className="absolute top-1/4 -left-32 w-64 md:w-80 h-64 md:h-80 bg-primary/10 rounded-full blur-[80px] md:blur-[100px] animate-pulse" />
+                <div className="absolute bottom-1/4 -right-36 w-72 md:w-96 h-72 md:h-96 bg-accent/10 rounded-full blur-[100px] md:blur-[120px] animate-pulse" />
+            </div>
 
             <div className="container px-4 md:px-6 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
@@ -177,16 +179,16 @@ export function Hero() {
                             <motion.div
                                 animate={{ y: [0, -15, 0] }}
                                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                className="absolute top-1/4 right-0 w-20 h-20 bg-primary/20 rounded-2xl backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg translate-z-40 rotate-12"
+                                className="absolute top-1/4 right-0 w-16 md:w-20 h-16 md:h-20 bg-primary/20 rounded-2xl backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg translate-z-40 rotate-12"
                             >
-                                <CodeIcon className="w-10 h-10 text-primary" />
+                                <CodeIcon className="w-8 h-8 md:w-10 md:h-10 text-primary" />
                             </motion.div>
                             <motion.div
                                 animate={{ y: [0, 20, 0] }}
                                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                                className="absolute bottom-1/4 left-0 w-16 h-16 bg-accent/20 rounded-full backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg translate-z-30 -rotate-12"
+                                className="absolute bottom-1/4 left-0 w-14 md:w-16 h-14 md:h-16 bg-accent/20 rounded-full backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg translate-z-30 -rotate-12"
                             >
-                                <MousePointer2 className="w-8 h-8 text-accent" />
+                                <MousePointer2 className="w-6 h-6 md:w-8 md:h-8 text-accent" />
                             </motion.div>
                         </div>
                     </motion.div>

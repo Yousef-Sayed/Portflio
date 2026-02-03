@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, MapPin, Send, Github, Linkedin, Twitter, Check, Phone, ArrowUpRight } from "lucide-react";
+import { Mail, MapPin, Send, Github, Linkedin, Facebook, Check, Phone, ArrowUpRight } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
@@ -149,7 +149,7 @@ export function Contact() {
     };
 
     return (
-        <section id="contact" className="py-20 md:py-32 bg-background relative overflow-hidden" dir={direction}>
+        <section id="contact" className="py-24 md:py-32 bg-background relative overflow-hidden" dir={direction}>
             {/* Background Decorative Element */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[800px] h-[300px] md:h-[800px] bg-primary/5 rounded-full blur-[100px] md:blur-[150px] pointer-events-none -z-10" />
 
@@ -201,7 +201,7 @@ export function Contact() {
                                             <div className="flex-grow min-w-0">
                                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
                                                 {item.link ? (
-                                                    <a href={item.link} className="text-lg md:text-xl font-bold text-foreground hover:text-primary transition-colors flex items-center gap-2 break-all sm:break-normal">
+                                                    <a href={item.link} className="text-sm md:text-xl font-bold text-foreground hover:text-primary transition-colors flex items-center gap-2 break-all sm:break-normal">
                                                         {item.value}
                                                         <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                                                     </a>
@@ -229,7 +229,7 @@ export function Contact() {
                                         >
                                             {link.icon === "github" && <Github className="w-6 h-6" />}
                                             {link.icon === "linkedin" && <Linkedin className="w-6 h-6" />}
-                                            {link.icon === "twitter" && <Twitter className="w-6 h-6" />}
+                                            {link.icon === "facebook" && <Facebook className="w-6 h-6" />}
                                             {link.icon === "mail" && <Mail className="w-6 h-6" />}
                                         </motion.a>
                                     ))}

@@ -18,7 +18,7 @@ export function Portfolio() {
     const projects = t.projects;
 
     return (
-        <section id="portfolio" className="py-20 md:py-32 bg-secondary/5 relative" dir={direction}>
+        <section id="portfolio" className="py-24 md:py-32 bg-secondary/5 relative" dir={direction}>
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 rounded-bl-[100px] -z-10" />
             <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-accent/5 rounded-tr-[100px] -z-10" />
@@ -68,7 +68,7 @@ export function Portfolio() {
                                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hidden lg:flex flex-col justify-end p-6">
                                             <div className="flex flex-wrap gap-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                                                 {project.liveUrl && (
                                                     <Button size="sm" className="rounded-xl shadow-lg bg-white text-black hover:bg-white/90" asChild>
@@ -111,6 +111,24 @@ export function Portfolio() {
                                         <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow italic">
                                             {project.description}
                                         </p>
+
+                                        {/* Mobile/Tablet Only Links (Hidden on Desktop) */}
+                                        <div className="flex lg:hidden flex-wrap gap-2 mt-auto pt-4 border-t border-border/50">
+                                            {project.liveUrl && (
+                                                <Button size="sm" variant="outline" className="rounded-xl flex-1 text-xs h-9 border-primary/20 text-primary hover:bg-primary hover:text-white" asChild>
+                                                    <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                                                        <ExternalLink className={`w-3.5 h-3.5 ${isRTL ? "ml-1.5" : "mr-1.5"}`} /> {language === 'ar' ? "الموقع" : "Website"}
+                                                    </a>
+                                                </Button>
+                                            )}
+                                            {project.playStoreUrl && (
+                                                <Button size="sm" className="rounded-xl flex-1 text-xs h-9" asChild>
+                                                    <a href={project.playStoreUrl} target="_blank" rel="noopener noreferrer">
+                                                        <PlayStoreIcon className={`w-3.5 h-3.5 ${isRTL ? "ml-1.5" : "mr-1.5"}`} /> {language === 'ar' ? "جوجل بلاي" : "Play Store"}
+                                                    </a>
+                                                </Button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>

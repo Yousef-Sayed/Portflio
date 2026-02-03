@@ -115,8 +115,10 @@
     @apply border-border transition-colors duration-300;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html[lang="ar"] body {
@@ -125,6 +127,15 @@
   
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Global selection colors matching brand identity */
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+
+  ::-moz-selection {
+    @apply bg-primary/30 text-foreground;
   }
 
   /* Global hover improvements */

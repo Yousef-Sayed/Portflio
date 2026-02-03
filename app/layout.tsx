@@ -55,7 +55,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${cairo.variable} antialiased bg-white dark:bg-[#213448] text-[#213448] dark:text-[#EAE0CF] transition-colors duration-300 font-sans`}>
+      <body
+        className={`${inter.variable} ${cairo.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}
+        suppressHydrationWarning
+      >
         <LanguageProvider>
           <ThemeProvider defaultTheme="light" storageKey="portfolio-theme">
             {/* Note: User must run 'npx convex dev' to generate the URL */}

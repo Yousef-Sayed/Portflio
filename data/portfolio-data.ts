@@ -33,20 +33,20 @@ export interface SocialLink {
 
 export const socialLinks: SocialLink[] = [
     {
+        name: "Facebook",
+        url: "https://www.facebook.com/yousef.sayed.98434",
+        icon: "facebook",
+    },
+    {
         name: "GitHub",
-        url: "https://github.com",
+        url: "https://github.com/Yousef-Sayed/",
         icon: "github",
     },
-    {
-        name: "LinkedIn",
-        url: "https://linkedin.com",
-        icon: "linkedin",
-    },
-    {
-        name: "Twitter",
-        url: "https://twitter.com",
-        icon: "twitter",
-    },
+    // {
+    //     name: "LinkedIn",
+    //     url: "https://linkedin.com",
+    //     icon: "linkedin",
+    // },
     {
         name: "Email",
         url: "mailto:youssefabdrabooh@gmail.com",

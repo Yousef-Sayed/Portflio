@@ -72,7 +72,7 @@ export function About() {
     };
 
     return (
-        <section id="about" className="py-20 md:py-32 bg-background relative overflow-hidden" dir={direction}>
+        <section id="about" className="py-24 md:py-32 bg-background relative overflow-hidden" dir={direction}>
             {/* Background decoration */}
             <div className="absolute top-1/2 left-0 w-full h-[500px] bg-secondary/10 -skew-y-6 -z-10" />
 
