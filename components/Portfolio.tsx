@@ -18,25 +18,25 @@ export function Portfolio() {
     const projects = t.projects;
 
     return (
-        <section id="portfolio" className="py-32 bg-secondary/5 relative" dir={direction}>
+        <section id="portfolio" className="py-20 md:py-32 bg-secondary/5 relative" dir={direction}>
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 rounded-bl-[100px] -z-10" />
             <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-accent/5 rounded-tr-[100px] -z-10" />
 
             <div className="container px-4 md:px-6">
-                <div className="flex flex-col items-center mb-16 space-y-6 text-center">
-                    <Badge variant="outline" className="border-primary/30 text-primary px-4 py-1 text-sm uppercase tracking-widest">
+                <div className="flex flex-col items-center mb-10 md:mb-16 space-y-4 md:space-y-6 text-center">
+                    <Badge variant="outline" className="border-primary/30 text-primary px-4 py-1 text-xs md:text-sm uppercase tracking-widest">
                         {t.portfolio.title}
                     </Badge>
-                    <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-foreground font-heading">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground font-heading">
                         {language === 'ar' ? "معرض أعمالي" : "Selected Works"}
                     </h2>
-                    <p className="text-muted-foreground max-w-2xl text-lg">
+                    <p className="text-muted-foreground max-w-2xl text-base md:text-lg px-4 md:px-0">
                         {t.portfolio.subtitle}
                     </p>
                 </div>
 
-                <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 mt-12">
+                <div className="grid gap-6 md:gap-10 md:grid-cols-2 lg:grid-cols-3 mt-8 md:mt-12 px-2 md:px-0">
                     <AnimatePresence mode="popLayout">
                         {projects.map((project, index) => (
                             <motion.div

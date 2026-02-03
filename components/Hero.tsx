@@ -58,7 +58,7 @@ export function Hero() {
             <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/10 rounded-full blur-[120px] animate-pulse" />
 
             <div className="container px-4 md:px-6 relative z-10">
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
 
                     {/* Text Content */}
                     <motion.div
@@ -67,9 +67,9 @@ export function Hero() {
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                         className="flex flex-col space-y-8 text-center lg:text-start"
                     >
-                        <div className="inline-flex items-center self-center lg:self-start rounded-full border border-primary/20 bg-secondary/30 px-4 py-1.5 text-sm font-semibold text-primary backdrop-blur-md shadow-sm">
+                        <div className="inline-flex items-center self-center lg:self-start rounded-full border border-primary/20 bg-secondary/30 px-3 py-1 md:px-4 md:py-1.5 text-xs md:text-sm font-semibold text-primary backdrop-blur-md shadow-sm">
                             <SparkleIcon className="w-4 h-4 mr-2 rtl:ml-2 rtl:mr-0 text-primary animate-spin-slow" />
-                            {t.hero.greeting} {t.personalInfo.name}
+                            {t.hero.badge}
                         </div>
 
                         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-foreground font-heading leading-[1.1]">
@@ -92,7 +92,7 @@ export function Hero() {
                             )}
                         </h1>
 
-                        <p className="text-xl md:text-2xl text-muted-foreground/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                        <p className="text-lg md:text-2xl text-muted-foreground/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
                             <span className="font-medium text-foreground">{t.personalInfo.title}</span> — {t.personalInfo.bio}
                         </p>
 

@@ -72,7 +72,7 @@ export function About() {
     };
 
     return (
-        <section id="about" className="py-24 bg-background relative overflow-hidden" dir={direction}>
+        <section id="about" className="py-20 md:py-32 bg-background relative overflow-hidden" dir={direction}>
             {/* Background decoration */}
             <div className="absolute top-1/2 left-0 w-full h-[500px] bg-secondary/10 -skew-y-6 -z-10" />
 
@@ -81,12 +81,12 @@ export function About() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-16 space-y-4"
+                    className="text-center mb-10 md:mb-16 space-y-3 md:space-y-4"
                 >
-                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground font-heading">
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground font-heading">
                         {t.about.title}
                     </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+                    <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
                         {t.about.subtitle}
                     </p>
                 </motion.div>
