@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, MapPin, Send, Github, Linkedin, Twitter, Check, Phone, ArrowUpRight } from "lucide-react";
 import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 // Component that safely uses Convex hook
 function ConvexContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: any, onSuccess: () => void }) {
-    const sendMessage = useMutation("messages:send" as any);
+    const sendMessage = useMutation(api.messages.send);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -72,11 +73,11 @@ function LocalContactForm({ isRTL, t, onSuccess }: { isRTL: boolean, t: any, onS
 // Fixed Shared Form Layout to actually include the form elements
 function FormLayout({ isRTL, t, onSubmit, isSubmitting }: { isRTL: boolean, t: any, onSubmit: any, isSubmitting: boolean }) {
     return (
-        <Card className="border-none bg-background/40 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden rounded-[2.5rem] relative">
+        <Card className="border-none bg-background/40 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] relative">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -z-10" />
-            <CardContent className="p-8 md:p-12">
-                <form onSubmit={onSubmit} className="space-y-8">
-                    <div className="grid md:grid-cols-2 gap-8">
+            <CardContent className="p-6 md:p-12">
+                <form onSubmit={onSubmit} className="space-y-6 md:space-y-8">
+                    <div className="grid md:grid-cols-2 gap-6 md:gap-8">
                         <div className="space-y-3 group">
                             <label htmlFor="name" className="text-sm font-bold ml-1 transition-colors group-focus-within:text-primary">{t.contact.form.name}</label>
                             <Input
@@ -148,9 +149,9 @@ export function Contact() {
     };
 
     return (
-        <section id="contact" className="py-32 bg-background relative overflow-hidden" dir={direction}>
+        <section id="contact" className="py-20 md:py-32 bg-background relative overflow-hidden" dir={direction}>
             {/* Background Decorative Element */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] Pointer-events-none -z-10" />
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[800px] h-[300px] md:h-[800px] bg-primary/5 rounded-full blur-[100px] md:blur-[150px] pointer-events-none -z-10" />
 
             <div className="container px-4 md:px-6 relative z-10">
                 <div className="max-w-6xl mx-auto">
@@ -168,7 +169,7 @@ export function Contact() {
                                 <div className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-sm font-bold tracking-widest uppercase rounded-lg">
                                     {language === 'ar' ? "تواصل معي" : "Get in Touch"}
                                 </div>
-                                <h2 className="text-5xl md:text-6xl font-black tracking-tight text-foreground font-heading leading-tight">
+                                <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground font-heading leading-tight">
                                     {t.contact.title.split(' ').map((word, i) => (
                                         <span key={i} className={i % 2 === 1 ? "text-primary dark:text-primary" : ""}>
                                             {word}{' '}
@@ -252,7 +253,7 @@ export function Contact() {
                                             initial={{ opacity: 0, scale: 0.9 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.9 }}
-                                            className="bg-background/80 backdrop-blur-2xl rounded-[2.5rem] p-12 text-center shadow-2xl border border-primary/20 flex flex-col items-center justify-center min-h-[500px]"
+                                            className="bg-background/80 backdrop-blur-2xl rounded-[1.5rem] md:rounded-[2.5rem] p-8 md:p-12 text-center shadow-2xl border border-primary/20 flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px]"
                                         >
                                             <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-8 animate-bounce-slow">
                                                 <Check className="w-12 h-12" />
