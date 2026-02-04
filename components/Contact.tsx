@@ -2,15 +2,15 @@
 
 import * as React from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Mail, MapPin, Send, Github, Linkedin, Facebook, Check, ArrowUpRight } from "lucide-react";
-import { useMutation } from "convex/react";
+import { Mail, MapPin, Send, Github, Linkedin, Facebook, Check, ArrowUpRight, Phone } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { portfolioData, socialLinks } from "@/data/portfolio-data";
+import { portfolioData, socialLinks as defaultSocialLinks } from "@/data/portfolio-data";
 import { useLanguage } from "@/components/LanguageProvider";
 import { cn } from "@/lib/utils";
 
@@ -146,99 +146,228 @@ export function Contact() {
     const isRTL = direction === "rtl";
     const hasConvex = !!process.env.NEXT_PUBLIC_CONVEX_URL;
 
+    // Always call useQuery (React hooks rule)
+    const storedEmail = useQuery(api.messages.getSetting, { key: "contact_email" });
+    const storedPhones = useQuery(api.messages.getSetting, { key: "contact_phones" });
+    const storedFacebook = useQuery(api.messages.getSetting, { key: "social_facebook" });
+    const storedGithub = useQuery(api.messages.getSetting, { key: "social_github" });
+    const storedLinkedin = useQuery(api.messages.getSetting, { key: "social_linkedin" });
+    
+    // Use stored values from Convex, fallback to portfolio data
+    const contactEmail = (hasConvex && storedEmail !== undefined && storedEmail) ? storedEmail : t.personalInfo.email;
+    
+    // Parse phone numbers from JSON
+    const phoneNumbers = React.useMemo(() => {
+        if (hasConvex && storedPhones !== undefined && storedPhones) {
+            try {
+                const parsed = JSON.parse(storedPhones);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        }
+        return [];
+    }, [hasConvex, storedPhones]);
+    
+    // Build dynamic social links
+    const socialLinks = React.useMemo(() => {
+        const links: Array<{ name: string; url: string; icon: string }> = [];
+        
+        const facebookUrl = (hasConvex && storedFacebook !== undefined && storedFacebook) 
+            ? storedFacebook 
+            : defaultSocialLinks.find(l => l.icon === "facebook")?.url;
+        if (facebookUrl) {
+            links.push({ name: "Facebook", url: facebookUrl, icon: "facebook" });
+        }
+        
+        const githubUrl = (hasConvex && storedGithub !== undefined && storedGithub) 
+            ? storedGithub 
+            : defaultSocialLinks.find(l => l.icon === "github")?.url;
+        if (githubUrl) {
+            links.push({ name: "GitHub", url: githubUrl, icon: "github" });
+        }
+        
+        const linkedinUrl = (hasConvex && storedLinkedin !== undefined && storedLinkedin) 
+            ? storedLinkedin 
+            : defaultSocialLinks.find(l => l.icon === "linkedin")?.url;
+        if (linkedinUrl) {
+            links.push({ name: "LinkedIn", url: linkedinUrl, icon: "linkedin" });
+        }
+        
+        // Always add email link
+        links.push({ name: "Email", url: `mailto:${contactEmail}`, icon: "mail" });
+        
+        return links;
+    }, [hasConvex, storedFacebook, storedGithub, storedLinkedin, contactEmail]);
+
     const handleSuccess = () => {
         setIsSuccess(true);
         setTimeout(() => setIsSuccess(false), 5000);
     };
 
     return (
-        <section id="contact" className="py-24 md:py-32 bg-background relative overflow-hidden" dir={direction}>
-            {/* Background Decorative Element */}
+        <section id="contact" className="py-24 md:py-32 bg-gradient-to-b from-background via-background to-muted/20 relative overflow-hidden" dir={direction}>
+            {/* Background Decorative Elements */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[800px] h-[300px] md:h-[800px] bg-primary/5 rounded-full blur-[100px] md:blur-[150px] pointer-events-none -z-10" />
+            <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-blue-500/5 rounded-full blur-[80px] pointer-events-none -z-10" />
+            <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-green-500/5 rounded-full blur-[80px] pointer-events-none -z-10" />
 
             <div className="container px-4 md:px-6 relative z-10">
                 <div className="max-w-6xl mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
 
                         {/* Header & Info Side */}
-                        <div className="lg:col-span-2 space-y-12">
+                        <div className="lg:col-span-2 space-y-10">
+                            {/* Section Header */}
                             <m.div
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6 }}
-                                className="space-y-6"
+                                className="space-y-5"
                             >
-                                <div className="inline-block px-3 py-1 md:px-4 md:py-1.5 bg-primary/10 text-primary text-[10px] md:text-sm font-bold tracking-widest uppercase rounded-lg">
+                                <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-primary/10 text-primary text-[10px] md:text-xs font-bold tracking-widest uppercase rounded-full border border-primary/20">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                                     {language === 'ar' ? "تواصل معي" : "Get in Touch"}
                                 </div>
-                                <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-foreground font-heading leading-tight">
+                                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground font-heading leading-tight">
                                     {t.contact.title.split(' ').map((word, i) => (
                                         <span key={i} className={i % 2 === 1 ? "text-primary dark:text-primary" : ""}>
                                             {word}{' '}
                                         </span>
                                     ))}
                                 </h2>
-                                <p className="text-lg md:text-xl text-muted-foreground/80 leading-relaxed font-light">
+                                <p className="text-base md:text-lg text-muted-foreground/80 leading-relaxed">
                                     {t.contact.subtitle}
                                 </p>
                             </m.div>
 
-                            <div className="space-y-6">
-                                {[
-                                    { icon: Mail, label: t.contact.form.email, value: t.personalInfo.email, link: `mailto:${t.personalInfo.email}`, color: "bg-blue-500/10 text-blue-500" },
-                                    { icon: MapPin, label: language === 'ar' ? 'الموقع' : 'Location', value: t.personalInfo.location, link: null, color: "bg-red-500/10 text-red-500" }
-                                ].map((item, i) => (
-                                    <m.div
-                                        key={i}
-                                        initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: i * 0.1 }}
-                                        className="group p-5 md:p-6 rounded-3xl bg-secondary/10 border border-border/50 hover:bg-secondary/20 transition-all cursor-default"
-                                    >
-                                        <div className="flex items-center gap-4 md:gap-6">
-                                            <div className={cn("w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform", item.color)}>
-                                                <item.icon className="w-6 h-6 md:w-7 md:h-7" />
+                            {/* Contact Info Cards */}
+                            <m.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6, delay: 0.1 }}
+                                className="space-y-4"
+                            >
+                                {/* Email Card */}
+                                <div className="group relative p-4 md:p-5 rounded-2xl bg-gradient-to-br from-blue-500/5 to-blue-500/10 dark:from-blue-500/10 dark:to-blue-500/5 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                            <Mail className="w-5 h-5 md:w-6 md:h-6 text-blue-500" />
+                                        </div>
+                                        <div className="flex-grow min-w-0">
+                                            <p className="text-[10px] md:text-xs font-semibold text-blue-500/80 uppercase tracking-wider mb-0.5">
+                                                {t.contact.form.email}
+                                            </p>
+                                            <a 
+                                                href={`mailto:${contactEmail}`} 
+                                                className="text-sm md:text-base font-semibold text-foreground hover:text-blue-500 transition-colors flex items-center gap-2 group/link break-all"
+                                            >
+                                                {contactEmail}
+                                                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all shrink-0" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Phone Numbers Card */}
+                                {phoneNumbers.length > 0 && (
+                                    <div className="relative p-4 md:p-5 rounded-2xl bg-gradient-to-br from-green-500/5 to-green-500/10 dark:from-green-500/10 dark:to-green-500/5 border border-green-500/20 hover:border-green-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/5">
+                                        <div className="flex gap-4">
+                                            <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-green-500/15 flex items-center justify-center shrink-0 self-start">
+                                                <Phone className="w-5 h-5 md:w-6 md:h-6 text-green-500" />
                                             </div>
-                                            <div className="flex-grow min-w-0">
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
-                                                {item.link ? (
-                                                    <a href={item.link} className="text-sm md:text-xl font-bold text-foreground hover:text-primary transition-colors flex items-center gap-2 break-all sm:break-normal">
-                                                        {item.value}
-                                                        <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                                                    </a>
-                                                ) : (
-                                                    <p className="text-lg md:text-xl font-bold text-foreground break-words">{item.value}</p>
-                                                )}
+                                            <div className="flex-grow min-w-0 space-y-3">
+                                                <p className="text-[10px] md:text-xs font-semibold text-green-500/80 uppercase tracking-wider">
+                                                    {language === 'ar' ? 'أرقام الهاتف' : 'Phone Numbers'}
+                                                </p>
+                                                <div className="space-y-2.5">
+                                                    {phoneNumbers.map((phone: { id?: string; label: string; number: string }, index: number) => (
+                                                        <div key={phone.id || index} className="group/phone flex items-center justify-between gap-2 p-2.5 -mx-2.5 rounded-lg hover:bg-green-500/10 transition-colors">
+                                                            <div className="min-w-0 flex-grow">
+                                                                {phone.label && (
+                                                                    <span className="text-[10px] md:text-xs text-muted-foreground font-medium block mb-0.5">
+                                                                        {phone.label}
+                                                                    </span>
+                                                                )}
+                                                                <a 
+                                                                    href={`tel:${phone.number.replace(/\s/g, '')}`}
+                                                                    className="text-sm md:text-base font-semibold text-foreground hover:text-green-500 transition-colors flex items-center gap-2"
+                                                                    dir="ltr"
+                                                                >
+                                                                    {phone.number}
+                                                                    <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover/phone:opacity-100 transition-opacity shrink-0" />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
-                                    </m.div>
-                                ))}
-                            </div>
+                                    </div>
+                                )}
 
-                            <div className="space-y-6 pt-4">
-                                <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">{t.contact.followMe}</h3>
-                                <div className="flex flex-wrap gap-4">
-                                    {socialLinks.map((link) => (
+                                {/* Location Card */}
+                                <div className="group relative p-4 md:p-5 rounded-2xl bg-gradient-to-br from-red-500/5 to-orange-500/10 dark:from-red-500/10 dark:to-orange-500/5 border border-red-500/20 hover:border-red-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/5">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                            <MapPin className="w-5 h-5 md:w-6 md:h-6 text-red-500" />
+                                        </div>
+                                        <div className="flex-grow min-w-0">
+                                            <p className="text-[10px] md:text-xs font-semibold text-red-500/80 uppercase tracking-wider mb-0.5">
+                                                {language === 'ar' ? 'الموقع' : 'Location'}
+                                            </p>
+                                            <p className="text-sm md:text-base font-semibold text-foreground">
+                                                {t.personalInfo.location}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </m.div>
+
+                            {/* Social Links */}
+                            <m.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6, delay: 0.2 }}
+                                className="space-y-4 pt-2"
+                            >
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                    <span className="w-8 h-px bg-muted-foreground/30" />
+                                    {t.contact.followMe}
+                                </h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {socialLinks.map((link, index) => (
                                         <m.a
                                             key={link.name}
                                             href={link.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            whileHover={{ y: -5, scale: 1.1 }}
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            whileInView={{ opacity: 1, scale: 1 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: 0.3 + index * 0.05 }}
+                                            whileHover={{ y: -4, scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
-                                            className="w-14 h-14 rounded-2xl bg-secondary/20 border border-border/50 flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 shadow-sm"
+                                            className={cn(
+                                                "w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm",
+                                                link.icon === "github" && "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 border border-gray-200 dark:border-gray-700",
+                                                link.icon === "linkedin" && "bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white border border-blue-200 dark:border-blue-800",
+                                                link.icon === "facebook" && "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400 hover:bg-blue-700 hover:text-white border border-blue-200 dark:border-blue-800",
+                                                link.icon === "mail" && "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white border border-red-200 dark:border-red-800"
+                                            )}
                                             aria-label={language === 'ar' ? `تابعني على ${link.name}` : `Follow me on ${link.name}`}
                                         >
-                                            {link.icon === "github" && <Github className="w-6 h-6" />}
-                                            {link.icon === "linkedin" && <Linkedin className="w-6 h-6" />}
-                                            {link.icon === "facebook" && <Facebook className="w-6 h-6" />}
-                                            {link.icon === "mail" && <Mail className="w-6 h-6" />}
+                                            {link.icon === "github" && <Github className="w-5 h-5 md:w-6 md:h-6" />}
+                                            {link.icon === "linkedin" && <Linkedin className="w-5 h-5 md:w-6 md:h-6" />}
+                                            {link.icon === "facebook" && <Facebook className="w-5 h-5 md:w-6 md:h-6" />}
+                                            {link.icon === "mail" && <Mail className="w-5 h-5 md:w-6 md:h-6" />}
                                         </m.a>
                                     ))}
                                 </div>
-                            </div>
+                            </m.div>
                         </div>
 
                         {/* Form Side */}
@@ -259,16 +388,16 @@ export function Contact() {
                                             exit={{ opacity: 0, scale: 0.9 }}
                                             className="bg-background/80 backdrop-blur-2xl rounded-[1.5rem] md:rounded-[2.5rem] p-8 md:p-12 text-center shadow-2xl border border-primary/20 flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px]"
                                         >
-                                            <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-8 animate-bounce-slow">
-                                                <Check className="w-12 h-12" />
+                                            <div className="w-20 h-20 md:w-24 md:h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6 md:mb-8 animate-bounce-slow">
+                                                <Check className="w-10 h-10 md:w-12 md:h-12" />
                                             </div>
-                                            <h3 className="text-4xl font-black mb-4">{t.contact.form.sent}</h3>
-                                            <p className="text-xl text-muted-foreground max-w-sm">
+                                            <h3 className="text-3xl md:text-4xl font-black mb-3 md:mb-4">{t.contact.form.sent}</h3>
+                                            <p className="text-base md:text-xl text-muted-foreground max-w-sm">
                                                 {language === 'ar' ? 'شكراً لتواصلك معي! سأقوم بالرد عليك في أقرب وقت ممكن.' : 'Thanks for reaching out! I will get back to you as soon as possible.'}
                                             </p>
                                             <Button
                                                 variant="outline"
-                                                className="mt-10 h-14 px-8 rounded-2xl border-2 font-bold"
+                                                className="mt-8 md:mt-10 h-12 md:h-14 px-6 md:px-8 rounded-2xl border-2 font-bold"
                                                 onClick={() => setIsSuccess(false)}
                                             >
                                                 {language === 'ar' ? 'إرسال رسالة أخرى' : 'Send another message'}

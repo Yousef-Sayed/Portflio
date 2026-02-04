@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { m, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Download, Send, MousePointer2 } from "lucide-react";
+import { m, useMotionValue, useSpring, useTransform, LazyMotion, domAnimation } from "framer-motion";
+import { Download, Send, MousePointer2, Zap } from "lucide-react";
 import Image from "next/image";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
 import { portfolioData } from "@/data/portfolio-data";
@@ -13,6 +15,39 @@ export function Hero() {
     const { language, direction } = useLanguage();
     const t = portfolioData[language];
     const isRTL = direction === "rtl";
+    
+    // Fetch dynamic hero settings from Convex
+    const heroSettings = useQuery(api.hero.getSettings);
+    
+    // Dynamic content with fallbacks to static data
+    const badge = language === 'ar' 
+        ? (heroSettings?.badgeAr || t.hero.badge)
+        : (heroSettings?.badgeEn || t.hero.badge);
+    
+    const title = language === 'ar'
+        ? (heroSettings?.titleAr || t.personalInfo.title)
+        : (heroSettings?.titleEn || t.personalInfo.title);
+    
+    const bio = language === 'ar'
+        ? (heroSettings?.bioAr || t.personalInfo.bio)
+        : (heroSettings?.bioEn || t.personalInfo.bio);
+    
+    const contactBtn = language === 'ar'
+        ? (heroSettings?.contactBtnAr || t.hero.contactBtn)
+        : (heroSettings?.contactBtnEn || t.hero.contactBtn);
+    
+    const downloadBtn = language === 'ar'
+        ? (heroSettings?.downloadBtnAr || t.hero.downloadBtn)
+        : (heroSettings?.downloadBtnEn || t.hero.downloadBtn);
+    
+    const heroImage = heroSettings?.heroImage || t.personalInfo.avatar;
+    const resumeUrl = heroSettings?.resumeUrl || t.personalInfo.resumeUrl;
+    const yearsExp = heroSettings?.yearsExperience || "5+";
+    const projectsNum = heroSettings?.projectsCompleted || "50+";
+    
+    // For headline, we use custom rendering based on dynamic data
+    const headlineEn = heroSettings?.headlineEn || "Crafting Digital High-End Solutions";
+    const headlineAr = heroSettings?.headlineAr || "أصنع تجارب رقمية متكاملة";
 
     // Mouse tilt effect for 3D image
     const x = useMotionValue(0);
@@ -57,6 +92,55 @@ export function Hero() {
         document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
     };
 
+    // Handle CV download - works for both local and external URLs
+    const handleDownloadCV = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        
+        if (!resumeUrl) return;
+        
+        try {
+            // For local files (starting with /), use direct download
+            if (resumeUrl.startsWith('/')) {
+                const link = document.createElement('a');
+                link.href = resumeUrl;
+                link.download = resumeUrl.split('/').pop() || 'CV.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                return;
+            }
+            
+            // For external URLs (Convex storage or other), fetch and download
+            const response = await fetch(resumeUrl);
+            if (!response.ok) throw new Error('Download failed');
+            
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            // Try to get filename from URL or use default
+            const urlParts = resumeUrl.split('/');
+            let filename = urlParts[urlParts.length - 1] || 'CV.pdf';
+            // Clean up filename if it has query params
+            filename = filename.split('?')[0];
+            // Ensure it has an extension
+            if (!filename.includes('.')) {
+                filename = 'CV.pdf';
+            }
+            
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download error:', error);
+            // Fallback: open in new tab
+            window.open(resumeUrl, '_blank');
+        }
+    };
+
     return (
         <section
             id="home"
@@ -81,31 +165,19 @@ export function Hero() {
                     >
                         <div className="inline-flex items-center self-center lg:self-start rounded-full border border-primary/20 bg-secondary/30 px-3 py-1 md:px-4 md:py-1.5 text-xs md:text-sm font-semibold text-primary backdrop-blur-md shadow-sm">
                             <SparkleIcon className="w-4 h-4 mr-2 rtl:ml-2 rtl:mr-0 text-primary animate-spin-slow" />
-                            {t.hero.badge}
+                            {badge}
                         </div>
 
                         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-foreground font-heading leading-[1.1]">
                             {language === 'ar' ? (
-                                <>
-                                    أصنع <span className="text-primary relative group cursor-default">
-                                        تجارب
-                                        <span className="absolute -bottom-2 left-0 w-full h-1 bg-primary/30 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
-                                    </span> <br />
-                                    <span className="text-accent underline decoration-accent/20 underline-offset-8">رقمية</span> متكاملة
-                                </>
+                                <span dangerouslySetInnerHTML={{ __html: formatHeadline(headlineAr, 'ar') }} />
                             ) : (
-                                <>
-                                    Crafting <span className="text-primary relative group cursor-default">
-                                        Digital
-                                        <span className="absolute -bottom-2 left-0 w-full h-1 bg-primary/30 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
-                                    </span> <br />
-                                    High-End <span className="text-accent italic font-light">Solutions</span>
-                                </>
+                                <span dangerouslySetInnerHTML={{ __html: formatHeadline(headlineEn, 'en') }} />
                             )}
                         </h1>
 
                         <p className="text-lg md:text-2xl text-muted-foreground/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                            <span className="font-medium text-foreground">{t.personalInfo.title}</span> — {t.personalInfo.bio}
+                            <span className="font-medium text-foreground">{title}</span> — {bio}
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 pt-4">
@@ -115,31 +187,30 @@ export function Hero() {
                                 onClick={scrollToContact}
                             >
                                 <Send className={`w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform ${isRTL ? "rotate-180" : ""}`} />
-                                {t.hero.contactBtn}
+                                {contactBtn}
                             </Button>
 
                             <Button
                                 size="lg"
                                 variant="outline"
                                 className="glass group"
-                                asChild
+                                onClick={handleDownloadCV}
+                                aria-label={language === 'ar' ? "تحميل السيرة الذاتية" : "Download Resume"}
                             >
-                                <a href={t.personalInfo.resumeUrl} download aria-label={language === 'ar' ? "تحميل السيرة الذاتية" : "Download Resume"}>
-                                    <Download className="w-5 h-5 group-hover:bounce transition-transform" />
-                                    {t.hero.downloadBtn}
-                                </a>
+                                <Download className="w-5 h-5 group-hover:bounce transition-transform" />
+                                {downloadBtn}
                             </Button>
                         </div>
 
                         {/* Quick Stats or Tags */}
                         <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8 pt-6 opacity-60">
                             <div className="flex items-center gap-2">
-                                <span className="text-3xl font-bold text-foreground">5+</span>
+                                <span className="text-3xl font-bold text-foreground">{yearsExp}</span>
                                 <span className="text-xs uppercase tracking-widest leading-none">{language === 'ar' ? "سنوات\nخبرة" : "Years of\nExperience"}</span>
                             </div>
                             <div className="w-px h-8 bg-border hidden sm:block" />
                             <div className="flex items-center gap-2">
-                                <span className="text-3xl font-bold text-foreground">50+</span>
+                                <span className="text-3xl font-bold text-foreground">{projectsNum}</span>
                                 <span className="text-xs uppercase tracking-widest leading-none">{language === 'ar' ? "مشروع\nمنجز" : "Projects\nCompleted"}</span>
                             </div>
                         </div>
@@ -178,7 +249,7 @@ export function Hero() {
                                 className="relative w-full h-full drop-shadow-[0_25px_50px_rgba(0,0,0,0.3)] group-hover:scale-105 transition-transform duration-500 transform translate-z-20"
                             >
                                 <Image
-                                    src={t.personalInfo.avatar}
+                                    src={heroImage}
                                     alt={language === 'ar' ? `صورة ${t.personalInfo.name}` : `Professional portrait of ${t.personalInfo.name}`}
                                     fill
                                     className="object-contain"
@@ -212,7 +283,7 @@ export function Hero() {
                 initial={{ opacity: 0, y: 0 }}
                 animate={{ opacity: 1, y: 10 }}
                 transition={{ delay: 2, duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 group"
+                className="absolute bottom-8 sm:bottom-10 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 group z-20"
             >
                 <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground group-hover:text-primary transition-colors">
                     {language === 'ar' ? "استكشف" : "Explore"}
@@ -231,6 +302,30 @@ export function Hero() {
             </m.div>
         </section>
     );
+}
+
+// Helper function to format headline with styling
+// Use **word** for primary color, __word__ for accent color with underline
+function formatHeadline(text: string, lang: 'en' | 'ar'): string {
+    // Replace **word** with primary colored span
+    let formatted = text.replace(/\*\*([^*]+)\*\*/g, 
+        '<span class="text-primary relative group cursor-default">$1<span class="absolute -bottom-2 left-0 w-full h-1 bg-primary/30 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></span></span>'
+    );
+    
+    // Replace __word__ with accent colored span
+    formatted = formatted.replace(/__([^_]+)__/g, 
+        '<span class="text-accent underline decoration-accent/20 underline-offset-8">$1</span>'
+    );
+    
+    // Replace ~~word~~ with italic font-light accent
+    formatted = formatted.replace(/~~([^~]+)~~/g,
+        '<span class="text-accent italic font-light">$1</span>'
+    );
+    
+    // Replace newlines with <br>
+    formatted = formatted.replace(/\n/g, '<br />');
+    
+    return formatted;
 }
 
 function SparkleIcon(props: React.SVGProps<SVGSVGElement>) {

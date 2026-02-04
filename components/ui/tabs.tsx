@@ -14,7 +14,8 @@ const TabsList = React.forwardRef<
     <TabsPrimitive.List
         ref={ref}
         className={cn(
-            "inline-flex h-11 items-center justify-center rounded-lg bg-[#EAE0CF] p-1 text-[#547792] dark:bg-[#213448] dark:text-[#94B4C1]",
+            "inline-flex h-11 items-center justify-center rounded-xl bg-muted/80 p-1.5 text-muted-foreground backdrop-blur-sm border border-border/50",
+            "dark:bg-muted/50 dark:border-border/30",
             className
         )}
         {...props}
@@ -29,7 +30,12 @@ const TabsTrigger = React.forwardRef<
     <TabsPrimitive.Trigger
         ref={ref}
         className={cn(
-            "inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#547792] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-[#213448] data-[state=active]:shadow-sm dark:ring-offset-[#213448] dark:focus-visible:ring-[#94B4C1] dark:data-[state=active]:bg-[#547792] dark:data-[state=active]:text-white",
+            "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
+            "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "disabled:pointer-events-none disabled:opacity-50",
+            "hover:bg-background/60 hover:text-foreground",
+            "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+            "dark:hover:bg-background/40 dark:data-[state=active]:bg-primary/20 dark:data-[state=active]:text-primary-foreground dark:data-[state=active]:shadow-md",
             className
         )}
         {...props}
@@ -44,7 +50,7 @@ const TabsContent = React.forwardRef<
     <TabsPrimitive.Content
         ref={ref}
         className={cn(
-            "mt-4 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#547792] focus-visible:ring-offset-2 dark:ring-offset-[#213448] dark:focus-visible:ring-[#94B4C1]",
+            "mt-4 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             className
         )}
         {...props}

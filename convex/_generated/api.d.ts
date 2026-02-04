@@ -8,7 +8,12 @@
  * @module
  */
 
+import type * as experience from "../experience.js";
+import type * as hero from "../hero.js";
 import type * as messages from "../messages.js";
+import type * as projects from "../projects.js";
+import type * as skills from "../skills.js";
+import type * as storage from "../storage.js";
 
 import type {
   ApiFromModules,
@@ -17,7 +22,12 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  experience: typeof experience;
+  hero: typeof hero;
   messages: typeof messages;
+  projects: typeof projects;
+  skills: typeof skills;
+  storage: typeof storage;
 }>;
 
 /**

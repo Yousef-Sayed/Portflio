@@ -5,7 +5,9 @@ import { m } from "framer-motion";
 import { ArrowLeft, Globe, Github } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { portfolioData } from "@/data/portfolio-data";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { portfolioData, Project } from "@/data/portfolio-data";
 import { useLanguage } from "@/components/LanguageProvider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +17,42 @@ export default function ProjectContent({ slug }: { slug: string }) {
     const { language, direction } = useLanguage();
     const t = portfolioData[language];
     const isRTL = direction === "rtl";
+    const hasConvex = !!process.env.NEXT_PUBLIC_CONVEX_URL;
 
-    const project = t.projects.find(p => p.slug === slug);
+    // Fetch project from Convex
+    const convexProject = useQuery(api.projects.getBySlug, { slug });
+
+    // Map Convex project to expected format
+    const dynamicProject: Project | null = React.useMemo(() => {
+        if (!convexProject) return null;
+        
+        return {
+            id: convexProject._id,
+            slug: convexProject.slug,
+            title: language === 'ar' && convexProject.titleAr ? convexProject.titleAr : convexProject.title,
+            description: language === 'ar' && convexProject.descriptionAr ? convexProject.descriptionAr : convexProject.description,
+            image: convexProject.image,
+            tags: convexProject.tags,
+            platform: language === 'ar' && convexProject.platformAr ? convexProject.platformAr : convexProject.platform,
+            liveUrl: convexProject.liveUrl,
+            playStoreUrl: convexProject.playStoreUrl,
+            githubUrl: convexProject.githubUrl,
+            featured: convexProject.featured,
+        };
+    }, [convexProject, language]);
+
+    // Use Convex project if available, otherwise fall back to static data
+    const staticProject = t.projects.find(p => p.slug === slug);
+    const project = hasConvex && dynamicProject ? dynamicProject : staticProject;
+
+    // Loading state for Convex
+    if (hasConvex && convexProject === undefined) {
+        return (
+            <div className="min-h-[70vh] flex flex-col items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            </div>
+        );
+    }
 
     if (!project) {
         return (

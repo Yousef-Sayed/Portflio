@@ -4,13 +4,9 @@
   :root {
     /* Palette Definition */
     --palette-primary: 206 27% 38%;
-    /* #3E5D75 - Passes contrast with white text */
     --palette-secondary: 38 35% 86%;
-    /* #EAE0CF */
     --palette-dark: 211 37% 21%;
-    /* #213448 */
     --palette-accent: 197 28% 40%;
-    /* #497282 */
 
     /* Light Mode Mapping */
     --background: 0 0% 100%;
@@ -24,14 +20,12 @@
 
     --primary: var(--palette-primary);
     --primary-foreground: 0 0% 100%;
-    /* Changed to white for 4.5:1 ratio */
 
     --secondary: var(--palette-secondary);
     --secondary-foreground: var(--palette-dark);
 
     --muted: var(--palette-secondary);
     --muted-foreground: 211 18% 35%;
-    /* #4A5D6B - Balanced for readability */
 
     --accent: var(--palette-accent);
     --accent-foreground: 0 0% 100%;
@@ -47,23 +41,17 @@
   }
 
   .dark {
-    /* Optimized Dark Mode Mapping for High Contrast & Professionalism */
     --background: 211 40% 6%;
-    /* Deeper dark for better depth */
     --foreground: 38 40% 98%;
-    /* Crisp off-white */
 
     --card: 211 37% 10%;
-    /* Subtle elevation */
     --card-foreground: 38 40% 98%;
 
     --popover: 211 40% 8%;
     --popover-foreground: 38 40% 98%;
 
     --primary: 197 60% 70%;
-    /* Brightened blue for dark mode contrast */
     --primary-foreground: 211 40% 6%;
-    /* Matching deep dark background */
 
     --secondary: 211 30% 16%;
     --secondary-foreground: 38 40% 95%;
@@ -72,7 +60,6 @@
     --muted-foreground: 197 20% 75%;
 
     --accent: 206 55% 60%;
-    /* Clearer accent */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -91,37 +78,27 @@
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
-
   --color-popover: hsl(var(--popover));
   --color-popover-foreground: hsl(var(--popover-foreground));
-
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
-
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
-
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
-
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
-
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
-
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-
   --radius: var(--radius);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-
   --font-sans: var(--font-inter), var(--font-cairo), system-ui, sans-serif;
 }
 
@@ -145,7 +122,6 @@
     scroll-behavior: smooth;
   }
 
-  /* Global selection colors matching brand identity */
   ::selection {
     @apply bg-primary text-primary-foreground;
   }
@@ -154,12 +130,114 @@
     @apply bg-primary text-primary-foreground;
   }
 
-  /* Global hover improvements */
   button,
   a,
   .card {
     @apply transition-all duration-300 ease-out;
   }
+}
+
+/* Modern Custom Scrollbar - Light & Dark Mode */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: hsl(var(--muted-foreground) / 0.6);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Dark Mode Scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.4);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.6);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:active {
+  background: hsl(var(--primary) / 0.7);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Corner and track interactions */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-track:hover {
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-track:hover {
+  background: hsl(var(--muted) / 0.3);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+.dark * {
+  scrollbar-color: hsl(var(--primary) / 0.4) transparent;
+}
+
+/* Selection styling */
+::selection {
+  @apply bg-primary text-primary-foreground;
+}
+
+::-moz-selection {
+  @apply bg-primary text-primary-foreground;
+}
+
+/* Animations */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 15s ease infinite;
 }
 
 /* 3D Depth Utilities */
@@ -175,107 +253,49 @@
   backface-visibility: hidden;
 }
 
-/* Custom Animations */
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+.translate-z-10 {
+  transform: translateZ(10px);
 }
 
-.animate-spin-slow {
-  animation: spin-slow 8s linear infinite;
+.translate-z-20 {
+  transform: translateZ(20px);
 }
 
-@keyframes gradient-x {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
+.translate-z-30 {
+  transform: translateZ(30px);
 }
 
-.animate-gradient-x {
-  background-size: 200% 200%;
-  animation: gradient-x 15s ease infinite;
+.translate-z-40 {
+  transform: translateZ(40px);
 }
 
-/* Enhanced Button Styling for Accessibility & Contrast */
-button,
-[role="button"],
-a[class*="button"] {
-  @apply relative;
-  transition: all 0.3s ease-in-out;
-  position: relative;
-}
-
-/* SVG icons in buttons */
-button svg,
-[role="button"] svg,
-a[class*="button"] svg {
-  transition: transform 0.3s ease-in-out;
-}
-
-/* Focus visible improvements with better visibility */
+/* Focus Styles */
 button:focus-visible,
-a:focus-visible,
-[role="button"]:focus-visible {
+a:focus-visible {
   @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
 }
 
-/* Smooth state transitions */
-button:active,
-[role="button"]:active {
-  transition-duration: 0.1s;
-}
-
 .dark button:focus-visible,
-.dark [role="button"]:focus-visible,
-.dark a[class*="button"]:focus-visible {
+.dark a:focus-visible {
   @apply ring-primary/80;
 }
 
-/* Mobile touch optimization for buttons */
+/* Mobile touch optimization */
 @media (max-width: 640px) {
   button,
   [role="button"],
   a[class*="button"] {
     @apply min-h-[44px] min-w-[44px];
-    /* Ensures minimum touch target size per WCAG standards */
-  }
-  
-  button:active,
-  [role="button"]:active,
-  a[class*="button"]:active {
-    transition-duration: 0.1s;
   }
 }
 
-/* Ensure text doesn't get cut off on smaller screens */
-@media (max-width: 480px) {
-  button span,
-  [role="button"] span,
-  a[class*="button"] span {
-    @apply line-clamp-1;
-  }
-}
-
-/* Prefer reduced motion support */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  button,
-  [role="button"],
-  a[class*="button"],
-  button svg,
-  [role="button"] svg,
-  a[class*="button"] svg {
-    transition: none !important;
-    animation: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -54,10 +54,10 @@ export const portfolioData = {
     en: {
         personalInfo: {
             name: "Youssef Abdrabboh",
-            title: "Full Stack Developer",
+            title: "Software Engineer",
             email: "youssefabdrabooh@gmail.com",
             location: "Cairo, Egypt",
-            bio: "Passionate Full Stack Developer with experience in building scalable web applications using modern technologies.",
+            bio: "Passionate Software Engineer with experience in building scalable web applications using modern technologies.",
             avatar: "/my-image-without-background.png",
             resumeUrl: "/Youssef_Sayed_Backend.pdf",
         },
@@ -210,10 +210,10 @@ export const portfolioData = {
     ar: {
         personalInfo: {
             name: "يوسف عبدربه",
-            title: "Full Stack Developer",
+            title: "Software Engineer",
             email: "youssefabdrabooh@gmail.com",
             location: "القاهرة، مصر",
-            bio: "مطور Full Stack شغوف بخبرة في بناء تطبيقات ويب قابلة للتطوير باستخدام أحدث التقنيات.",
+            bio: "مطور برمجيات شغوف بخبرة في بناء تطبيقات ويب قابلة للتطوير باستخدام أحدث التقنيات.",
             avatar: "/my-image-without-background.png",
             resumeUrl: "/Youssef_Sayed_Backend.pdf",
         },

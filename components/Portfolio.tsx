@@ -5,18 +5,44 @@ import { m, AnimatePresence } from "framer-motion";
 import { ExternalLink, Smartphone, Globe } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { portfolioData } from "@/data/portfolio-data";
+import { portfolioData, Project } from "@/data/portfolio-data";
 import { useLanguage } from "@/components/LanguageProvider";
 
 export function Portfolio() {
     const { language, direction } = useLanguage();
     const t = portfolioData[language];
     const isRTL = direction === "rtl";
+    const hasConvex = !!process.env.NEXT_PUBLIC_CONVEX_URL;
 
-    const projects = t.projects;
+    // Fetch projects from Convex
+    const convexProjects = useQuery(api.projects.getActive);
+
+    // Map Convex projects to the expected format with language support
+    const dynamicProjects: Project[] = React.useMemo(() => {
+        if (!convexProjects || convexProjects.length === 0) return [];
+        
+        return convexProjects.map(p => ({
+            id: p._id,
+            slug: p.slug,
+            title: language === 'ar' && p.titleAr ? p.titleAr : p.title,
+            description: language === 'ar' && p.descriptionAr ? p.descriptionAr : p.description,
+            image: p.image,
+            tags: p.tags,
+            platform: language === 'ar' && p.platformAr ? p.platformAr : p.platform,
+            liveUrl: p.liveUrl,
+            playStoreUrl: p.playStoreUrl,
+            githubUrl: p.githubUrl,
+            featured: p.featured,
+        }));
+    }, [convexProjects, language]);
+
+    // Use Convex projects if available, otherwise fall back to static data
+    const projects = hasConvex && dynamicProjects.length > 0 ? dynamicProjects : t.projects;
 
     return (
         <section id="portfolio" className="py-24 md:py-32 bg-secondary/5 relative" dir={direction}>

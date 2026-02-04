@@ -1,11 +1,14 @@
 "use client";
 
+import * as React from "react";
 import { m } from "framer-motion";
 import { Briefcase, Code, Database, Layout, Server, Sparkles } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { portfolioData } from "@/data/portfolio-data";
+import { portfolioData, Skill, Experience } from "@/data/portfolio-data";
 import { useLanguage } from "@/components/LanguageProvider";
 
 // Icon Mapping for common tech
@@ -54,6 +57,56 @@ export function About() {
     const { language, direction } = useLanguage();
     const t = portfolioData[language];
     const isRTL = direction === "rtl";
+    const hasConvex = !!process.env.NEXT_PUBLIC_CONVEX_URL;
+
+    // Fetch data from Convex
+    const convexSkills = useQuery(api.skills.getActive);
+    const convexExperience = useQuery(api.experience.getActive);
+
+    // Map Convex skills to the expected format with language support
+    const dynamicFrontendSkills: Skill[] = React.useMemo(() => {
+        if (!convexSkills) return [];
+        return convexSkills
+            .filter(s => s.category === "frontend")
+            .map(s => ({
+                name: language === 'ar' && s.nameAr ? s.nameAr : s.name,
+                level: s.level,
+            }));
+    }, [convexSkills, language]);
+
+    const dynamicBackendSkills: Skill[] = React.useMemo(() => {
+        if (!convexSkills) return [];
+        return convexSkills
+            .filter(s => s.category === "backend")
+            .map(s => ({
+                name: language === 'ar' && s.nameAr ? s.nameAr : s.name,
+                level: s.level,
+            }));
+    }, [convexSkills, language]);
+
+    // Map Convex experience to the expected format with language support
+    const dynamicExperience: Experience[] = React.useMemo(() => {
+        if (!convexExperience) return [];
+        return convexExperience.map(e => ({
+            id: e._id,
+            role: language === 'ar' && e.roleAr ? e.roleAr : e.role,
+            company: language === 'ar' && e.companyAr ? e.companyAr : e.company,
+            period: language === 'ar' && e.periodAr ? e.periodAr : e.period,
+            description: language === 'ar' && e.descriptionAr ? e.descriptionAr : e.description,
+            current: e.current,
+        }));
+    }, [convexExperience, language]);
+
+    // Use Convex data if available, otherwise fall back to static data
+    const frontendSkills = hasConvex && dynamicFrontendSkills.length > 0 
+        ? dynamicFrontendSkills 
+        : t.skills.frontend;
+    const backendSkills = hasConvex && dynamicBackendSkills.length > 0 
+        ? dynamicBackendSkills 
+        : t.skills.backend;
+    const experience = hasConvex && dynamicExperience.length > 0 
+        ? dynamicExperience 
+        : t.experience;
 
     const container = {
         hidden: { opacity: 0 },
@@ -97,7 +150,7 @@ export function About() {
                         </h3>
 
                         <div className={`relative ${isRTL ? 'border-r-2 mr-4 pr-10' : 'border-l-2 ml-4 pl-10'} border-primary/20 space-y-12`}>
-                            {t.experience.map((job, index) => (
+                            {experience.map((job, index) => (
                                 <m.div
                                     key={job.id}
                                     initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
@@ -159,7 +212,7 @@ export function About() {
                                         {t.about.frontend}
                                     </h4>
                                     <div className="flex flex-wrap gap-3">
-                                        {t.skills.frontend.map((skill) => (
+                                        {frontendSkills.map((skill) => (
                                             <SkillBadge key={skill.name} name={skill.name} color="primary" />
                                         ))}
                                     </div>
@@ -177,7 +230,7 @@ export function About() {
                                         {t.about.backend}
                                     </h4>
                                     <div className="flex flex-wrap gap-3">
-                                        {t.skills.backend.map((skill) => (
+                                        {backendSkills.map((skill) => (
                                             <SkillBadge key={skill.name} name={skill.name} color="accent" />
                                         ))}
                                     </div>

@@ -5,8 +5,14 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        // Allow all HTTPS images for dynamic project images
         protocol: "https",
-        hostname: "images.unsplash.com",
+        hostname: "**",
+      },
+      {
+        // Allow HTTP images (for development/testing)
+        protocol: "http",
+        hostname: "**",
       },
     ],
     // Enable modern image formats for better compression
