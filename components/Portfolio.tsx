@@ -144,7 +144,7 @@ export function Portfolio() {
                                             </div>
                                         </div>
 
-                                        <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow italic line-clamp-2">
+                                        <p className="text-muted-foreground text-base leading-relaxed mb-6 flex-grow line-clamp-4">
                                             {project.description}
                                         </p>
 

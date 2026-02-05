@@ -47,6 +47,32 @@ export function Navbar() {
     React.useEffect(() => {
         if (!isHome) return;
 
+        const handleScroll = () => {
+            const sections = navLinks
+                .filter(link => !link.href.startsWith("/"))
+                .map(link => ({
+                    id: link.href.replace("#", ""),
+                    element: document.getElementById(link.href.replace("#", ""))
+                }))
+                .filter(item => item.element !== null);
+
+            if (sections.length === 0) return;
+
+            // Find which section is currently in view
+            let activeId = sections[0].id;
+            let minDistance = Math.abs(sections[0].element!.getBoundingClientRect().top - 100);
+
+            sections.forEach(({ id, element }) => {
+                const distance = Math.abs(element!.getBoundingClientRect().top - 100);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    activeId = id;
+                }
+            });
+
+            setActiveSection(activeId);
+        };
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -55,17 +81,23 @@ export function Navbar() {
                     }
                 });
             },
-            { threshold: 0.5 }
+            { threshold: 0.3, rootMargin: "-50% 0px -50% 0px" }
         );
 
         navLinks.forEach((link) => {
-            // Skip dashboard link for section observation
             if (link.href.startsWith("/")) return;
             const element = document.getElementById(link.href.replace("#", ""));
-            if (element) observer.observe(element);
+            if (element) {
+                observer.observe(element);
+            }
         });
 
-        return () => observer.disconnect();
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("scroll", handleScroll);
+        };
     }, [navLinks, isHome]);
 
     const scrollTo = (href: string) => {
@@ -78,6 +110,7 @@ export function Navbar() {
         }
         
         if (isHome) {
+            setActiveSection(id);
             const element = document.getElementById(id);
             if (element) {
                 element.scrollIntoView({ behavior: "smooth" });

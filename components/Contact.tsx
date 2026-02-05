@@ -209,8 +209,8 @@ export function Contact() {
         <section id="contact" className="py-24 md:py-32 bg-gradient-to-b from-background via-background to-muted/20 relative overflow-hidden" dir={direction}>
             {/* Background Decorative Elements */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[800px] h-[300px] md:h-[800px] bg-primary/5 rounded-full blur-[100px] md:blur-[150px] pointer-events-none -z-10" />
-            <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-blue-500/5 rounded-full blur-[80px] pointer-events-none -z-10" />
-            <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-green-500/5 rounded-full blur-[80px] pointer-events-none -z-10" />
+            <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-primary/5 rounded-full blur-[80px] pointer-events-none -z-10" />
+            <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-accent/5 rounded-full blur-[80px] pointer-events-none -z-10" />
 
             <div className="container px-4 md:px-6 relative z-10">
                 <div className="max-w-6xl mx-auto">
@@ -248,80 +248,63 @@ export function Contact() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.1 }}
-                                className="space-y-4"
+                                className="space-y-3"
                             >
-                                {/* Email Card */}
-                                <div className="group relative p-4 md:p-5 rounded-2xl bg-gradient-to-br from-blue-500/5 to-blue-500/10 dark:from-blue-500/10 dark:to-blue-500/5 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                            <Mail className="w-5 h-5 md:w-6 md:h-6 text-blue-500" />
-                                        </div>
-                                        <div className="flex-grow min-w-0">
-                                            <p className="text-[10px] md:text-xs font-semibold text-blue-500/80 uppercase tracking-wider mb-0.5">
-                                                {t.contact.form.email}
-                                            </p>
-                                            <a 
-                                                href={`mailto:${contactEmail}`} 
-                                                className="text-sm md:text-base font-semibold text-foreground hover:text-blue-500 transition-colors flex items-center gap-2 group/link break-all"
-                                            >
-                                                {contactEmail}
-                                                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all shrink-0" />
-                                            </a>
-                                        </div>
+                                {/* Email */}
+                                <a 
+                                    href={`mailto:${contactEmail}`}
+                                    className="group relative flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/60 shadow-sm hover:shadow-md hover:border-primary/30 hover:bg-card transition-all duration-300 overflow-hidden"
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <div className="relative w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:scale-105 transition-all duration-300">
+                                        <Mail className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
                                     </div>
-                                </div>
-
-                                {/* Phone Numbers Card */}
-                                {phoneNumbers.length > 0 && (
-                                    <div className="relative p-4 md:p-5 rounded-2xl bg-gradient-to-br from-green-500/5 to-green-500/10 dark:from-green-500/10 dark:to-green-500/5 border border-green-500/20 hover:border-green-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/5">
-                                        <div className="flex gap-4">
-                                            <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-green-500/15 flex items-center justify-center shrink-0 self-start">
-                                                <Phone className="w-5 h-5 md:w-6 md:h-6 text-green-500" />
-                                            </div>
-                                            <div className="flex-grow min-w-0 space-y-3">
-                                                <p className="text-[10px] md:text-xs font-semibold text-green-500/80 uppercase tracking-wider">
-                                                    {language === 'ar' ? 'أرقام الهاتف' : 'Phone Numbers'}
-                                                </p>
-                                                <div className="space-y-2.5">
-                                                    {phoneNumbers.map((phone: { id?: string; label: string; number: string }, index: number) => (
-                                                        <div key={phone.id || index} className="group/phone flex items-center justify-between gap-2 p-2.5 -mx-2.5 rounded-lg hover:bg-green-500/10 transition-colors">
-                                                            <div className="min-w-0 flex-grow">
-                                                                {phone.label && (
-                                                                    <span className="text-[10px] md:text-xs text-muted-foreground font-medium block mb-0.5">
-                                                                        {phone.label}
-                                                                    </span>
-                                                                )}
-                                                                <a 
-                                                                    href={`tel:${phone.number.replace(/\s/g, '')}`}
-                                                                    className="text-sm md:text-base font-semibold text-foreground hover:text-green-500 transition-colors flex items-center gap-2"
-                                                                    dir="ltr"
-                                                                >
-                                                                    {phone.number}
-                                                                    <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover/phone:opacity-100 transition-opacity shrink-0" />
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div className="relative flex-grow min-w-0">
+                                        <p className="text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wide">
+                                            {t.contact.form.email}
+                                        </p>
+                                        <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-300 truncate">
+                                            {contactEmail}
+                                        </p>
                                     </div>
-                                )}
+                                    <ArrowUpRight className="relative w-5 h-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 shrink-0" />
+                                </a>
 
-                                {/* Location Card */}
-                                <div className="group relative p-4 md:p-5 rounded-2xl bg-gradient-to-br from-red-500/5 to-orange-500/10 dark:from-red-500/10 dark:to-orange-500/5 border border-red-500/20 hover:border-red-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/5">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                            <MapPin className="w-5 h-5 md:w-6 md:h-6 text-red-500" />
+                                {/* Phone Numbers */}
+                                {phoneNumbers.length > 0 && phoneNumbers.map((phone: { id?: string; label: string; number: string }, index: number) => (
+                                    <a 
+                                        key={phone.id || index}
+                                        href={`tel:${phone.number.replace(/\s/g, '')}`}
+                                        className="group relative flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/60 shadow-sm hover:shadow-md hover:border-primary/30 hover:bg-card transition-all duration-300 overflow-hidden"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <div className="relative w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:scale-105 transition-all duration-300">
+                                            <Phone className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
                                         </div>
-                                        <div className="flex-grow min-w-0">
-                                            <p className="text-[10px] md:text-xs font-semibold text-red-500/80 uppercase tracking-wider mb-0.5">
-                                                {language === 'ar' ? 'الموقع' : 'Location'}
+                                        <div className="relative flex-grow min-w-0">
+                                            <p className="text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wide">
+                                                {phone.label || (language === 'ar' ? 'الهاتف' : 'Phone')}
                                             </p>
-                                            <p className="text-sm md:text-base font-semibold text-foreground">
-                                                {t.personalInfo.location}
+                                            <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-300 truncate" dir="ltr">
+                                                {phone.number}
                                             </p>
                                         </div>
+                                        <ArrowUpRight className="relative w-5 h-5 text-muted-foreground/50 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 shrink-0" />
+                                    </a>
+                                ))}
+
+                                {/* Location */}
+                                <div className="group relative flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/60 shadow-sm overflow-hidden">
+                                    <div className="relative w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                        <MapPin className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div className="relative flex-grow min-w-0">
+                                        <p className="text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wide">
+                                            {language === 'ar' ? 'الموقع' : 'Location'}
+                                        </p>
+                                        <p className="text-sm font-semibold text-foreground truncate">
+                                            {t.personalInfo.location}
+                                        </p>
                                     </div>
                                 </div>
                             </m.div>
@@ -332,38 +315,31 @@ export function Contact() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.2 }}
-                                className="space-y-4 pt-2"
+                                className="pt-4"
                             >
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                                    <span className="w-8 h-px bg-muted-foreground/30" />
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-3">
+                                    <span className="flex-grow h-px bg-border" />
                                     {t.contact.followMe}
-                                </h3>
-                                <div className="flex flex-wrap gap-3">
+                                    <span className="flex-grow h-px bg-border" />
+                                </p>
+                                <div className="flex items-center justify-center gap-2">
                                     {socialLinks.map((link, index) => (
                                         <m.a
                                             key={link.name}
                                             href={link.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            whileInView={{ opacity: 1, scale: 1 }}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
                                             viewport={{ once: true }}
                                             transition={{ delay: 0.3 + index * 0.05 }}
-                                            whileHover={{ y: -4, scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                            className={cn(
-                                                "w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm",
-                                                link.icon === "github" && "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 border border-gray-200 dark:border-gray-700",
-                                                link.icon === "linkedin" && "bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white border border-blue-200 dark:border-blue-800",
-                                                link.icon === "facebook" && "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400 hover:bg-blue-700 hover:text-white border border-blue-200 dark:border-blue-800",
-                                                link.icon === "mail" && "bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white border border-red-200 dark:border-red-800"
-                                            )}
+                                            className="w-10 h-10 rounded-lg bg-card border border-border flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300"
                                             aria-label={language === 'ar' ? `تابعني على ${link.name}` : `Follow me on ${link.name}`}
                                         >
-                                            {link.icon === "github" && <Github className="w-5 h-5 md:w-6 md:h-6" />}
-                                            {link.icon === "linkedin" && <Linkedin className="w-5 h-5 md:w-6 md:h-6" />}
-                                            {link.icon === "facebook" && <Facebook className="w-5 h-5 md:w-6 md:h-6" />}
-                                            {link.icon === "mail" && <Mail className="w-5 h-5 md:w-6 md:h-6" />}
+                                            {link.icon === "github" && <Github className="w-4 h-4" />}
+                                            {link.icon === "linkedin" && <Linkedin className="w-4 h-4" />}
+                                            {link.icon === "facebook" && <Facebook className="w-4 h-4" />}
+                                            {link.icon === "mail" && <Mail className="w-4 h-4" />}
                                         </m.a>
                                     ))}
                                 </div>

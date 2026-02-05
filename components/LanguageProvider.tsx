@@ -15,7 +15,20 @@ const LanguageContext = React.createContext<LanguageProviderState | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-    const [language, setLanguageState] = React.useState<Language>("en");
+    const [language, setLanguageState] = React.useState<Language>(() => {
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("ytech-language");
+            if (saved === "ar" || saved === "en") {
+                return saved;
+            }
+            // Check browser language
+            const browserLang = navigator.language.split("-")[0];
+            if (browserLang === "ar") {
+                return "ar";
+            }
+        }
+        return "en";
+    });
 
     const setLanguage = React.useCallback((lang: Language) => {
         setLanguageState(lang);

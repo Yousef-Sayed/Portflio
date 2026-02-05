@@ -3,8 +3,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Inter, Cairo } from "next/font/google";
 import "./globals.css";
 
-import { MainLayout } from "@/components/MainLayout";
-
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -108,7 +106,7 @@ export default function RootLayout({
           className={`${inter.variable} ${cairo.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}
           suppressHydrationWarning
         >
-          <MainLayout>{children}</MainLayout>
+          {children}
         </body>
       </html>
     </ClerkProvider>

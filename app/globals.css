@@ -299,3 +299,17 @@ a:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 404 Page - Hide Header and Footer */
+body[data-page="404"] header,
+body[data-page="404"] nav,
+body[data-page="404"] footer {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Also hide by data attribute */
+[data-hide-on-404] {
+  display: none;
+}
