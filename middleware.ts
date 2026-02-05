@@ -1,16 +1,10 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Use Node.js runtime to avoid Edge Function limitations with Clerk
-export const runtime = "nodejs";
-
-const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
-
-export default clerkMiddleware(async (auth, req: NextRequest) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect();
-  }
-});
+// Minimal middleware - auth is handled at page level
+export default function middleware(req: NextRequest) {
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [

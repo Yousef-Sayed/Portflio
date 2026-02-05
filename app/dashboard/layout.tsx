@@ -11,7 +11,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
 import {
     Menu,
     Search,
@@ -458,7 +458,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <ConvexClientProvider>
             <ThemeProvider defaultTheme="light" storageKey="ytech-theme">
                 <LanguageProvider>
-                    <DashboardContent>{children}</DashboardContent>
+                    <SignedIn>
+                        <DashboardContent>{children}</DashboardContent>
+                    </SignedIn>
+                    <SignedOut>
+                        <RedirectToSignIn />
+                    </SignedOut>
                 </LanguageProvider>
             </ThemeProvider>
         </ConvexClientProvider>
