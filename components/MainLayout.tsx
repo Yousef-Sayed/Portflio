@@ -47,9 +47,9 @@ export function MainLayout({ children }: { children: ReactNode }) {
                             {!isDashboard && !isNotFoundPage && (
                                 <Navbar data-hide-on-404 />
                             )}
-                            <div data-page-content={isNotFoundPage ? "404" : "normal"}>
+                            <main data-page-content={isNotFoundPage ? "404" : "normal"}>
                                 {children}
-                            </div>
+                            </main>
                             {!isDashboard && !isNotFoundPage && (
                                 <Footer data-hide-on-404 />
                             )}
@@ -60,9 +60,9 @@ export function MainLayout({ children }: { children: ReactNode }) {
                             {!isDashboard && !isNotFoundPage && (
                                 <Navbar data-hide-on-404 />
                             )}
-                            <div data-page-content={isNotFoundPage ? "404" : "normal"}>
+                            <main data-page-content={isNotFoundPage ? "404" : "normal"}>
                                 {children}
-                            </div>
+                            </main>
                             {!isDashboard && !isNotFoundPage && (
                                 <Footer data-hide-on-404 />
                             )}
