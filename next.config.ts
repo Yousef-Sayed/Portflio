@@ -30,6 +30,9 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
 
+  // Server-only packages (native/WASM modules)
+  serverExternalPackages: ["mupdf"],
+
   // Remove console.logs in production
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { m, useMotionValue, useSpring, useTransform, LazyMotion, domAnimation } from "framer-motion";
-import { Download, Send, MousePointer2, Zap } from "lucide-react";
+import { Download, Send, MousePointer2, Zap, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -41,8 +41,8 @@ export function Hero() {
         : (heroSettings?.downloadBtnEn || t.hero.downloadBtn);
     
     const heroImage = heroSettings?.heroImage || t.personalInfo.avatar;
-    const resumeUrl = heroSettings?.resumeUrl || t.personalInfo.resumeUrl;
     const yearsExp = heroSettings?.yearsExperience || "5+";
+    const [downloading, setDownloading] = React.useState(false);
     const projectsNum = heroSettings?.projectsCompleted || "50+";
     
     // For headline, we use custom rendering based on dynamic data
@@ -92,52 +92,27 @@ export function Hero() {
         document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // Handle CV download - works for both local and external URLs
+    // Handle CV download - dynamically generate PDF from active data
     const handleDownloadCV = async (e: React.MouseEvent) => {
         e.preventDefault();
-        
-        if (!resumeUrl) return;
-        
+        if (downloading) return;
+        setDownloading(true);
         try {
-            // For local files (starting with /), use direct download
-            if (resumeUrl.startsWith('/')) {
-                const link = document.createElement('a');
-                link.href = resumeUrl;
-                link.download = resumeUrl.split('/').pop() || 'CV.pdf';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                return;
-            }
-            
-            // For external URLs (Convex storage or other), fetch and download
-            const response = await fetch(resumeUrl);
-            if (!response.ok) throw new Error('Download failed');
-            
+            const response = await fetch("/api/generate-cv");
+            if (!response.ok) throw new Error("Failed to generate CV");
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
+            const link = document.createElement("a");
             link.href = url;
-            
-            // Try to get filename from URL or use default
-            const urlParts = resumeUrl.split('/');
-            let filename = urlParts[urlParts.length - 1] || 'CV.pdf';
-            // Clean up filename if it has query params
-            filename = filename.split('?')[0];
-            // Ensure it has an extension
-            if (!filename.includes('.')) {
-                filename = 'CV.pdf';
-            }
-            
-            link.download = filename;
+            link.download = "Youssef_Abdrabboh_CV.pdf";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.error('Download error:', error);
-            // Fallback: open in new tab
-            window.open(resumeUrl, '_blank');
+            console.error("CV generation error:", error);
+        } finally {
+            setDownloading(false);
         }
     };
 
@@ -195,10 +170,17 @@ export function Hero() {
                                 variant="outline"
                                 className="glass group"
                                 onClick={handleDownloadCV}
+                                disabled={downloading}
                                 aria-label={language === 'ar' ? "تحميل السيرة الذاتية" : "Download Resume"}
                             >
-                                <Download className="w-5 h-5 group-hover:bounce transition-transform" />
-                                {downloadBtn}
+                                {downloading ? (
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                    <Download className="w-5 h-5 group-hover:bounce transition-transform" />
+                                )}
+                                {downloading
+                                    ? (language === 'ar' ? "جاري الإنشاء..." : "Generating...")
+                                    : downloadBtn}
                             </Button>
                         </div>
 

@@ -31,7 +31,8 @@ import {
     Github,
     Linkedin,
     Plus,
-    Trash2
+    Trash2,
+    FileDown
 } from "lucide-react";
 
 function SettingsContent() {
@@ -54,6 +55,7 @@ function SettingsContent() {
     const [faviconPreview, setFaviconPreview] = React.useState<string | null>(null);
     const [savingField, setSavingField] = React.useState<string | null>(null);
     const [saveStatus, setSaveStatus] = React.useState<Record<string, "idle" | "success" | "error">>({});
+    const [generatingCV, setGeneratingCV] = React.useState(false);
 
     // File input refs
     const logoInputRef = React.useRef<HTMLInputElement>(null);
@@ -808,6 +810,57 @@ function SettingsContent() {
                                     {renderSaveButton("social_linkedin", () => handleSave("social_linkedin", linkedin), false)}
                                 </div>
                             </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Generate CV */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <FileDown className="w-5 h-5 text-primary" />
+                                {language === "en" ? "Generate CV" : "إنشاء السيرة الذاتية"}
+                            </CardTitle>
+                            <CardDescription>
+                                {language === "en"
+                                    ? "Generate a professional PDF CV from your active portfolio data"
+                                    : "إنشاء سيرة ذاتية احترافية بصيغة PDF من بيانات محفظتك النشطة"}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Button
+                                onClick={async () => {
+                                    setGeneratingCV(true);
+                                    try {
+                                        const res = await fetch("/api/generate-cv");
+                                        if (!res.ok) throw new Error("Failed to generate CV");
+                                        const blob = await res.blob();
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement("a");
+                                        a.href = url;
+                                        a.download = "Youssef_Abdrabboh_CV.pdf";
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                        URL.revokeObjectURL(url);
+                                    } catch (err) {
+                                        console.error(err);
+                                        alert(language === "en" ? "Failed to generate CV" : "فشل في إنشاء السيرة الذاتية");
+                                    } finally {
+                                        setGeneratingCV(false);
+                                    }
+                                }}
+                                disabled={generatingCV}
+                                className="gap-2"
+                            >
+                                {generatingCV ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <FileDown className="w-4 h-4" />
+                                )}
+                                {generatingCV
+                                    ? (language === "en" ? "Generating..." : "جاري الإنشاء...")
+                                    : (language === "en" ? "Download CV (PDF)" : "تحميل السيرة الذاتية (PDF)")}
+                            </Button>
                         </CardContent>
                     </Card>
                 </TabsContent>
