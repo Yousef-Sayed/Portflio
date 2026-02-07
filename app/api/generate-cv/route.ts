@@ -4,13 +4,14 @@ import { api } from "@/convex/_generated/api";
 import * as mupdf from "mupdf";
 import QRCode from "qrcode";
 
-// ---------- Color palette (from globals.css, light mode) ----------
-// Primary HSL(206,27%,38%) → RGB
-const PRIMARY = { r: 0.277, g: 0.394, b: 0.483 };
-// Dark HSL(211,37%,21%) → RGB
-const DARK = { r: 0.133, g: 0.204, b: 0.286 };
-// Accent HSL(197,28%,40%) → RGB
-const ACCENT = { r: 0.288, g: 0.449, b: 0.512 };
+// ---------- Color palette (formal corporate palette) ----------
+// Clean white background with subtle professional accents
+const PRIMARY = { r: 0.15, g: 0.15, b: 0.18 }; // Dark slate - headings
+const SECONDARY = { r: 0.35, g: 0.38, b: 0.42 }; // Muted gray - subheadings
+const BODY = { r: 0.25, g: 0.25, b: 0.28 }; // Dark gray - body text
+
+// Helper for backward compatibility
+const DARK = BODY;
 
 // ---------- A4 dimensions (in points) ----------
 const A4_W = 595.28;
@@ -220,7 +221,7 @@ export async function GET(request: NextRequest) {
         const qrDataUrl: string = await QRCode.toDataURL(websiteUrl, {
             width: 200,
             margin: 1,
-            color: { dark: "#223449", light: "#FFFFFF" },
+            color: { dark: "#262830", light: "#FFFFFF" }, // Matches PRIMARY color
             errorCorrectionLevel: "M",
         });
         const qrBase64 = qrDataUrl.split(",")[1];
@@ -241,6 +242,14 @@ export async function GET(request: NextRequest) {
         // QR code image
         const qrImage = new mupdf.Image(qrBuffer);
         const qrImageRef = doc.addImage(qrImage);
+
+        // Social media links setup
+        const socialLinks: Array<{ label: string; url: string }> = [];
+        if (socialGithub) socialLinks.push({ label: "GitHub", url: socialGithub });
+        if (socialLinkedin) socialLinks.push({ label: "LinkedIn", url: socialLinkedin });
+        if (socialFacebook) socialLinks.push({ label: "Facebook", url: socialFacebook });
+
+        const socialLinkFontSize = 9;
 
         // Track links per page: { pageIndex, rect, uri }
         const linkQueue: Array<{ pageIndex: number; rect: [number, number, number, number]; uri: string }> = [];
@@ -347,12 +356,12 @@ export async function GET(request: NextRequest) {
 
         function drawSectionHeading(title: string) {
             ensureSpace(46);
-            curY += 12;
-            // Accent color bar
-            addRect(0, curY, CONTENT_W, 24, ACCENT);
-            // White text on bar
-            stream += `BT 1 1 1 rg /F2 13 Tf ${(MARGIN_LEFT + 10).toFixed(2)} ${(pdfY(curY) - 17).toFixed(2)} Td (${esc(title.toUpperCase())}) Tj ET\n`;
-            curY += 40;
+            curY += 14;
+            // Underline accent bar (thinner, cleaner look)
+            addRect(0, curY, CONTENT_W, 3, PRIMARY);
+            // Section title with PRIMARY color
+            stream += `BT ${PRIMARY.r.toFixed(3)} ${PRIMARY.g.toFixed(3)} ${PRIMARY.b.toFixed(3)} rg /F2 12 Tf ${(MARGIN_LEFT).toFixed(2)} ${(pdfY(curY) + 14).toFixed(2)} Td (${esc(title.toUpperCase())}) Tj ET\n`;
+            curY += 24;
         }
 
         // =================== PAGE CONSTRUCTION ===================
@@ -369,16 +378,16 @@ export async function GET(request: NextRequest) {
 
         // ---------- HEADER SECTION ----------
         // Name
-        addText("Youssef Abdrabboh", 0, 26, "F2", DARK);
+        addText("Youssef Abdrabboh", 0, 26, "F2", PRIMARY);
         curY += 32;
 
         // Title
-        addText("Software Engineer", 0, 14, "F3", PRIMARY);
-        curY += 20;
+        addText("Software Engineer", 0, 13, "F3", SECONDARY);
+        curY += 18;
 
         // Thin accent line (full width)
-        addLine(0, curY, CONTENT_W, 1.5, ACCENT);
-        curY += 12;
+        addLine(0, curY, CONTENT_W, 1, PRIMARY);
+        curY += 14;
 
         // Contact info row
         const contactItems: string[] = [];
@@ -389,46 +398,41 @@ export async function GET(request: NextRequest) {
         // Wrap contact line if needed
         const contactLineW = measureText(contactLine, helvetica, 9);
         if (contactLineW <= headerTextW) {
-            addText(contactLine, 0, 9, "F1", DARK);
+            addText(contactLine, 0, 9, "F1", BODY);
             const emailWidth = measureText(contactEmail, helvetica, 9);
             registerLink(0, curY - 9, emailWidth, 13, `mailto:${contactEmail}`);
             curY += 15;
         } else {
             // Email on its own line
-            addText(contactEmail, 0, 9, "F1", DARK);
+            addText(contactEmail, 0, 9, "F1", BODY);
             const emailWidth = measureText(contactEmail, helvetica, 9);
             registerLink(0, curY - 9, emailWidth, 13, `mailto:${contactEmail}`);
             curY += 14;
             // Phone numbers on next line
             const phoneLine = phoneNumbers.map((p) => p.number).join("  |  ");
-            addText(phoneLine, 0, 9, "F1", DARK);
+            addText(phoneLine, 0, 9, "F1", BODY);
             curY += 15;
         }
 
-        // Social media row
-        const socialItems: Array<{ label: string; url: string }> = [];
-        if (socialGithub) socialItems.push({ label: "GitHub: " + socialGithub.replace("https://", ""), url: socialGithub });
-        if (socialLinkedin) socialItems.push({ label: "LinkedIn: " + socialLinkedin.replace("https://", ""), url: socialLinkedin });
-        if (socialFacebook) socialItems.push({ label: "Facebook: " + socialFacebook.replace("https://", ""), url: socialFacebook });
-
+        // Social media row - text-based links
+        const socialLinkGap = 20;
         let socialX = 0;
-        for (const social of socialItems) {
-            const cleanText = social.label.replace(/[^\x20-\x7E]/g, "");
-            const textW = measureText(cleanText, helvetica, 8);
-            // Wrap to next line if exceeds header width
-            if (socialX > 0 && socialX + textW > headerTextW) {
-                curY += 13;
-                socialX = 0;
-            }
-            stream += `BT ${ACCENT.r.toFixed(3)} ${ACCENT.g.toFixed(3)} ${ACCENT.b.toFixed(3)} rg /F1 8 Tf ${(MARGIN_LEFT + socialX).toFixed(2)} ${pdfY(curY).toFixed(2)} Td (${esc(cleanText)}) Tj ET\n`;
-            registerLink(socialX, curY - 8, textW, 12, social.url);
-            socialX += textW + 20;
+        
+        for (const social of socialLinks) {
+            const textW = measureText(social.label, helvetica, socialLinkFontSize);
+            
+            // Draw link text with PRIMARY color
+            stream += `BT ${PRIMARY.r.toFixed(3)} ${PRIMARY.g.toFixed(3)} ${PRIMARY.b.toFixed(3)} rg /F1 ${socialLinkFontSize} Tf ${(MARGIN_LEFT + socialX).toFixed(2)} ${pdfY(curY).toFixed(2)} Td (${esc(social.label)}) Tj ET\n`;
+            
+            // Add underline
+            addLine(socialX, curY + 2, textW, 0.5, PRIMARY);
+            
+            // Register clickable area
+            registerLink(socialX, curY - socialLinkFontSize, textW, socialLinkFontSize + 6, social.url);
+            
+            socialX += textW + socialLinkGap;
         }
-        curY += 15;
-
-        // Accent line after header
-        addLine(0, curY, CONTENT_W, 0.75, ACCENT);
-        curY += 6;
+        curY += 22;
 
         // ---------- QR CODE (drawn last in header so it appears above lines) ----------
         // White background behind QR to mask any intersecting lines
@@ -438,7 +442,7 @@ export async function GET(request: NextRequest) {
         // Small label under QR
         const scanLabel = "Scan to visit website";
         const scanLabelW = measureText(scanLabel, helvetica, 6);
-        stream += `BT ${DARK.r.toFixed(3)} ${DARK.g.toFixed(3)} ${DARK.b.toFixed(3)} rg /F1 6 Tf ${(MARGIN_LEFT + qrX + (qrSize - scanLabelW) / 2).toFixed(2)} ${(pdfY(qrYTop) - qrSize - 9).toFixed(2)} Td (${esc(scanLabel)}) Tj ET\n`;
+        stream += `BT ${SECONDARY.r.toFixed(3)} ${SECONDARY.g.toFixed(3)} ${SECONDARY.b.toFixed(3)} rg /F1 6 Tf ${(MARGIN_LEFT + qrX + (qrSize - scanLabelW) / 2).toFixed(2)} ${(pdfY(qrYTop) - qrSize - 9).toFixed(2)} Td (${esc(scanLabel)}) Tj ET\n`;
         // QR link area
         registerLink(qrX, qrYTop, qrSize, qrSize + 14, websiteUrl);
         curY += 8;
@@ -450,19 +454,19 @@ export async function GET(request: NextRequest) {
             ensureSpace(70);
 
             // Role - Bold
-            addText(exp.role, 0, 11, "F2", DARK);
+            addText(exp.role, 0, 11, "F2", PRIMARY);
             curY += 15;
 
             // Company + Period
             const companyPeriod = `${exp.company}  |  ${exp.period}${exp.current ? "  (Current)" : ""}`;
-            addText(companyPeriod, 0, 9, "F3", PRIMARY);
+            addText(companyPeriod, 0, 9, "F3", SECONDARY);
             curY += 14;
 
             // Description (word-wrapped)
             const descLines = wrapText(exp.description, helvetica, 9, CONTENT_W - 10);
             for (const line of descLines) {
                 ensureSpace(14);
-                addText(line, 5, 9, "F1", { r: 0.25, g: 0.25, b: 0.25 });
+                addText(line, 5, 9, "F1", BODY);
                 curY += 13;
             }
             curY += 8;
@@ -479,12 +483,7 @@ export async function GET(request: NextRequest) {
         ensureSpace(22);
         addText("Frontend", 0, 11, "F2", PRIMARY);
         stream += `BT ${PRIMARY.r.toFixed(3)} ${PRIMARY.g.toFixed(3)} ${PRIMARY.b.toFixed(3)} rg /F2 11 Tf ${(MARGIN_LEFT + CONTENT_W / 2 + 10).toFixed(2)} ${pdfY(curY).toFixed(2)} Td (Backend) Tj ET\n`;
-        curY += 17;
-
-        // Thin lines under headers
-        addLine(0, curY, colWidth, 0.5, ACCENT);
-        addLine(CONTENT_W / 2 + 10, curY, CONTENT_W, 0.5, ACCENT);
-        curY += 10;
+        curY += 20; // Extra spacing instead of underlines
 
         // Skill rows (side by side)
         const maxRows = Math.max(frontendSkills.length, backendSkills.length);
@@ -492,11 +491,11 @@ export async function GET(request: NextRequest) {
             ensureSpace(16);
             if (i < frontendSkills.length) {
                 const bullet = "- " + frontendSkills[i].name;
-                addText(bullet, 5, 9, "F1", DARK);
+                addText(bullet, 5, 9, "F1", BODY);
             }
             if (i < backendSkills.length) {
                 const bullet = "- " + backendSkills[i].name;
-                stream += `BT ${DARK.r.toFixed(3)} ${DARK.g.toFixed(3)} ${DARK.b.toFixed(3)} rg /F1 9 Tf ${(MARGIN_LEFT + CONTENT_W / 2 + 15).toFixed(2)} ${pdfY(curY).toFixed(2)} Td (${esc(bullet)}) Tj ET\n`;
+                stream += `BT ${BODY.r.toFixed(3)} ${BODY.g.toFixed(3)} ${BODY.b.toFixed(3)} rg /F1 9 Tf ${(MARGIN_LEFT + CONTENT_W / 2 + 15).toFixed(2)} ${pdfY(curY).toFixed(2)} Td (${esc(bullet)}) Tj ET\n`;
             }
             curY += 15;
         }
@@ -509,17 +508,17 @@ export async function GET(request: NextRequest) {
             ensureSpace(60);
 
             // Project name - Bold
-            addText(proj.title, 0, 11, "F2", DARK);
+            addText(proj.title, 0, 11, "F2", PRIMARY);
             if (proj.platform) {
                 const titleW = measureText(proj.title, helveticaBold, 11);
-                stream += `BT ${PRIMARY.r.toFixed(3)} ${PRIMARY.g.toFixed(3)} ${PRIMARY.b.toFixed(3)} rg /F3 9 Tf ${(MARGIN_LEFT + titleW + 8).toFixed(2)} ${pdfY(curY).toFixed(2)} Td (${esc("(" + proj.platform + ")")}) Tj ET\n`;
+                stream += `BT ${SECONDARY.r.toFixed(3)} ${SECONDARY.g.toFixed(3)} ${SECONDARY.b.toFixed(3)} rg /F3 9 Tf ${(MARGIN_LEFT + titleW + 8).toFixed(2)} ${pdfY(curY).toFixed(2)} Td (${esc("(" + proj.platform + ")")}) Tj ET\n`;
             }
             curY += 15;
 
             // Tags
             if (proj.tags.length > 0) {
                 const tagsStr = proj.tags.join("  |  ");
-                addText(tagsStr, 5, 8, "F3", ACCENT);
+                addText(tagsStr, 5, 8, "F3", SECONDARY);
                 curY += 12;
             }
 
@@ -527,14 +526,13 @@ export async function GET(request: NextRequest) {
             const projDescLines = wrapText(proj.description, helvetica, 9, CONTENT_W - 10);
             for (const line of projDescLines) {
                 ensureSpace(14);
-                addText(line, 5, 9, "F1", { r: 0.25, g: 0.25, b: 0.25 });
+                addText(line, 5, 9, "F1", BODY);
                 curY += 13;
             }
 
             // Links row - with proper spacing and generous click targets
             let linkX = 5;
             const linkFontSize = 8;
-            const linkColor = ACCENT;
             let hasLinks = false;
 
             const projLinks: Array<{ label: string; url: string }> = [];
@@ -554,9 +552,9 @@ export async function GET(request: NextRequest) {
                 for (const pLink of projLinks) {
                     const lw = measureText(pLink.label, helvetica, linkFontSize);
                     // Draw link text
-                    addText(pLink.label, linkX, linkFontSize, "F1", linkColor);
+                    addText(pLink.label, linkX, linkFontSize, "F1", SECONDARY);
                     // Underline (visible, slightly thicker)
-                    addLine(linkX, curY + 2, linkX + lw, 0.5, linkColor);
+                    addLine(linkX, curY + 2, linkX + lw, 0.5, SECONDARY);
                     // Register clickable area (generous: 4pt below baseline to fontSize above)
                     registerLink(linkX, curY - linkFontSize - 2, lw + 4, linkFontSize + 8, pLink.url);
                     linkX += lw + 18;
@@ -573,10 +571,10 @@ export async function GET(request: NextRequest) {
         // ---------- FOOTER ----------
         ensureSpace(35);
         curY += 8;
-        addLine(0, curY, CONTENT_W, 0.5, ACCENT);
+        addLine(0, curY, CONTENT_W, 0.35, SECONDARY);
         curY += 14;
         const footerText = "Generated on " + new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-        addText(footerText, 0, 7, "F3", { r: 0.5, g: 0.5, b: 0.5 });
+        addText(footerText, 0, 7, "F3", SECONDARY);
 
         // Finish last page
         finishPage();
