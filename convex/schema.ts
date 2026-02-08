@@ -2,6 +2,19 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+    users: defineTable({
+        email: v.string(),
+        passwordHash: v.string(),
+        createdAt: v.number(),
+    }).index("email", ["email"]),
+    
+    sessions: defineTable({
+        userId: v.id("users"),
+        sessionToken: v.string(),
+        createdAt: v.number(),
+        expiresAt: v.number(),
+    }).index("token", ["sessionToken"]),
+
     messages: defineTable({
         name: v.string(),
         email: v.string(),

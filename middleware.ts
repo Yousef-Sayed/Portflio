@@ -1,9 +1,40 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Minimal middleware - auth is handled at page level
+const LOCALES = ["en", "ar"];
+const DEFAULT_LOCALE = "en";
+const COOKIE_NAME = "ytech-locale";
+
 export default function middleware(req: NextRequest) {
-  return NextResponse.next();
+  const pathname = req.nextUrl.pathname;
+
+  // Skip Next.js internals and all static files
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next();
+  }
+
+  // Get locale from cookie, or fallback to default
+  const cookieLocale = req.cookies.get(COOKIE_NAME)?.value;
+  const locale = LOCALES.includes(cookieLocale || "") ? cookieLocale! : DEFAULT_LOCALE;
+
+  // Create response and set locale cookie
+  const response = NextResponse.next();
+
+  // Ensure cookie is set (will be updated by client-side when language changes)
+  if (!req.cookies.has(COOKIE_NAME)) {
+    response.cookies.set(COOKIE_NAME, locale, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+  }
+
+  return response;
 }
 
 export const config = {

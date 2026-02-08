@@ -27,7 +27,21 @@ const nextConfig: NextConfig = {
   // Production optimizations
   experimental: {
     // Optimize package imports for smaller bundles
-    optimizePackageImports: ["lucide-react", "framer-motion"],
+    optimizePackageImports: [
+      "lucide-react", 
+      "framer-motion",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-tooltip",
+      "@radix-ui/react-label",
+      "@radix-ui/react-slider",
+      "@radix-ui/react-slot",
+      "@radix-ui/react-visually-hidden",
+      "class-variance-authority",
+      "clsx",
+      "tailwind-merge",
+    ],
   },
 
   // Server-only packages (native/WASM modules)
@@ -38,7 +52,7 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  // Security headers
+  // Security headers and caching
   async headers() {
     return [
       {
@@ -83,6 +97,16 @@ const nextConfig: NextConfig = {
           {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      // Cache HTML pages for better bfcache support
+      {
+        source: "/:path*(.html)?",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, must-revalidate",
           },
         ],
       },

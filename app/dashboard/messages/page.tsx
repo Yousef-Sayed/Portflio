@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as React from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -255,11 +257,14 @@ export default function MessagesPage() {
     }, [sortedMessages, searchQuery]);
 
     // Calculate this week's messages
+    const [now, setNow] = React.useState(0);
+    React.useEffect(() => {
+        setNow(Date.now());
+    }, []);
     const weekMessages = React.useMemo(() => {
         const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-        const now = Date.now();
         return messages.filter(m => (now - m.createdAt) < oneWeekMs).length;
-    }, [messages]);
+    }, [messages, now]);
 
     // Handle Convex not available
     if (!isConvexAvailable) {

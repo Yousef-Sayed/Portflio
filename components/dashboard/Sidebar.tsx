@@ -25,16 +25,18 @@ import {
     FolderKanban,
     Sparkles,
     Briefcase,
-    Image
+    Image,
+    LogOut,
+    User
 } from "lucide-react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Separator } from "@/components/ui/separator";
-import { UserButton, useUser } from "@clerk/nextjs";
 
 interface SidebarProps {
     className?: string;
     onClose?: () => void;
+    onLogout?: () => void;
 }
 
 const navItems = [
@@ -73,9 +75,14 @@ const navItems = [
         href: "/dashboard/settings",
         icon: Settings,
     },
+    {
+        name: { en: "Profile", ar: "الملف الشخصي" },
+        href: "/dashboard/profile",
+        icon: User,
+    },
 ];
 
-export function Sidebar({ className, onClose }: SidebarProps) {
+export function Sidebar({ className, onClose, onLogout }: SidebarProps) {
     const { language, direction } = useLanguage();
     const pathname = usePathname();
     const [collapsed, setCollapsed] = React.useState(false);
@@ -97,22 +104,20 @@ export function Sidebar({ className, onClose }: SidebarProps) {
     const brandTagline = storedTagline || (language === "en" ? "Dashboard" : "لوحة التحكم");
     const brandLogo = storedLogo || null;
 
-    // Get Clerk user info
-    const { user, isLoaded } = useUser();
-    const userName = user?.firstName || user?.username || "User";
-
     const t = {
         en: {
             collapse: "Collapse",
             expand: "Expand",
             backToSite: "Back to site",
             admin: "Admin",
+            logout: "Logout",
         },
         ar: {
             collapse: "طي",
             expand: "توسيع",
             backToSite: "العودة للموقع",
             admin: "مدير",
+            logout: "تسجيل الخروج",
         },
     };
 
@@ -318,7 +323,7 @@ export function Sidebar({ className, onClose }: SidebarProps) {
 
                 {/* Bottom section */}
                 <div className="mt-auto border-t border-border/40">
-                    {/* User profile section with Clerk UserButton */}
+                    {/* User profile section */}
                     <div className={cn(
                         "p-3 pt-4",
                         collapsed ? "flex justify-center" : ""
@@ -326,32 +331,21 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                         {collapsed ? (
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <div className="cursor-pointer">
-                                        <UserButton 
-                                            appearance={{
-                                                elements: {
-                                                    avatarBox: "h-9 w-9"
-                                                }
-                                            }}
-                                        />
+                                    <div className="cursor-pointer flex items-center justify-center h-9 w-9 rounded-xl bg-muted/30">
+                                        <span className="text-sm font-medium">A</span>
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent side={isRTL ? "left" : "right"}>
-                                    {userName} • {currentT.admin}
+                                    {currentT.admin}
                                 </TooltipContent>
                             </Tooltip>
                         ) : (
                             <div className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/30 border border-border/30">
-                                <UserButton 
-                                    appearance={{
-                                        elements: {
-                                            avatarBox: "h-9 w-9"
-                                        }
-                                    }}
-                                />
+                                <div className="flex items-center justify-center h-9 w-9 rounded-xl bg-primary/10">
+                                    <span className="text-sm font-medium text-primary">A</span>
+                                </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium truncate">{userName}</p>
-                                    <p className="text-xs text-muted-foreground/80 truncate">{currentT.admin}</p>
+                                    <p className="text-sm font-medium truncate">{currentT.admin}</p>
                                 </div>
                                 <ThemeToggle />
                             </div>
@@ -374,6 +368,16 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                                         {currentT.backToSite}
                                     </TooltipContent>
                                 </Tooltip>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="w-full h-9 hover:bg-muted/80 rounded-lg" aria-label={currentT.logout} onClick={onLogout}>
+                                            <LogOut className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side={isRTL ? "left" : "right"}>
+                                        {currentT.logout}
+                                    </TooltipContent>
+                                </Tooltip>
                             </>
                         ) : (
                             <>
@@ -383,6 +387,10 @@ export function Sidebar({ className, onClose }: SidebarProps) {
                                         <span className="text-sm">{currentT.backToSite}</span>
                                     </Button>
                                 </Link>
+                                <Button variant="ghost" className="w-full justify-start gap-3 h-9 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-lg" onClick={onLogout}>
+                                    <LogOut className="h-4 w-4" />
+                                    <span className="text-sm">{currentT.logout}</span>
+                                </Button>
                             </>
                         )}
                     </div>

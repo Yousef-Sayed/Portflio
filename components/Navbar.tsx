@@ -43,35 +43,9 @@ export function Navbar() {
 
     const isHome = pathname === "/";
 
-    // Active section observer
+    // Active section observer - Use IntersectionObserver only (more efficient than scroll)
     React.useEffect(() => {
         if (!isHome) return;
-
-        const handleScroll = () => {
-            const sections = navLinks
-                .filter(link => !link.href.startsWith("/"))
-                .map(link => ({
-                    id: link.href.replace("#", ""),
-                    element: document.getElementById(link.href.replace("#", ""))
-                }))
-                .filter(item => item.element !== null);
-
-            if (sections.length === 0) return;
-
-            // Find which section is currently in view
-            let activeId = sections[0].id;
-            let minDistance = Math.abs(sections[0].element!.getBoundingClientRect().top - 100);
-
-            sections.forEach(({ id, element }) => {
-                const distance = Math.abs(element!.getBoundingClientRect().top - 100);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    activeId = id;
-                }
-            });
-
-            setActiveSection(activeId);
-        };
 
         const observer = new IntersectionObserver(
             (entries) => {
@@ -92,11 +66,8 @@ export function Navbar() {
             }
         });
 
-        window.addEventListener("scroll", handleScroll, { passive: true });
-
         return () => {
             observer.disconnect();
-            window.removeEventListener("scroll", handleScroll);
         };
     }, [navLinks, isHome]);
 

@@ -254,19 +254,30 @@
 }
 
 .translate-z-10 {
-  transform: translateZ(10px);
+  transform: translateZ(10px) translate3d(0, 0, 0);
 }
 
 .translate-z-20 {
-  transform: translateZ(20px);
+  transform: translateZ(20px) translate3d(0, 0, 0);
 }
 
 .translate-z-30 {
-  transform: translateZ(30px);
+  transform: translateZ(30px) translate3d(0, 0, 0);
 }
 
 .translate-z-40 {
-  transform: translateZ(40px);
+  transform: translateZ(40px) translate3d(0, 0, 0);
+}
+
+/* GPU acceleration for better performance */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* Optimize animations */
+.hero-animate {
+  will-change: transform, opacity;
 }
 
 /* Focus Styles */

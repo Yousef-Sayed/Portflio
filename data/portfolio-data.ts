@@ -158,7 +158,7 @@ export const portfolioData = {
                 description: "University management system featuring a React frontend and Laravel backend. Includes a flexible CMS and a robust admin dashboard for academic administration.",
                 image: "https://images.unsplash.com/photo-1562774053-701939374585?w=800&q=80",
                 tags: ["React", "Laravel", "PHP", "Laravel Nova", "API"],
-                liveUrl: "https://hesperides-website.vercel.app/ar",
+                liveUrl: "https://hesperides-website.vercel.app",
                 featured: true,
             },
             {
@@ -314,7 +314,7 @@ export const portfolioData = {
                 description: "نظام إدارة جامعي يتميز بواجهة React وخلفية Laravel. يتضمن نظاماً مرناً لإدارة المحتوى ولوحة تحكم قوية للإدارة الأكاديمية.",
                 image: "https://images.unsplash.com/photo-1562774053-701939374585?w=800&q=80",
                 tags: ["ريأكت", "لارافيل", "PHP", "Laravel Nova", "API"],
-                liveUrl: "https://hesperides-website.vercel.app/ar",
+                liveUrl: "https://hesperides-website.vercel.app",
                 featured: true,
             },
             {

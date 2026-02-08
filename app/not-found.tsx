@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+
+export const dynamic = 'force-dynamic';
 
 const translations = {
   en: {
     headline: "Oops! The page you are looking for does not exist.",
-    description: "It seems you've ventured into uncharted territory. Let's get you back on track!",
+    description: "It seems you have ventured into uncharted territory. Let us get you back on track!",
     primaryCTA: "Back to Home",
   },
   ar: {
@@ -18,49 +19,12 @@ const translations = {
 };
 
 export default function NotFound() {
-  const [mounted, setMounted] = useState(false);
-  const [direction, setDirection] = useState<"ltr" | "rtl">("ltr");
-  const [language, setLanguage] = useState<"en" | "ar">("en");
-
-  useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("ytech-language");
-    if (saved === "ar" || saved === "en") {
-      setLanguage(saved);
-      setDirection(saved === "ar" ? "rtl" : "ltr");
-    } else {
-      const browserLang = navigator.language.split("-")[0];
-      if (browserLang === "ar") {
-        setLanguage("ar");
-        setDirection("rtl");
-      }
-    }
-  }, []);
-
-  const t = translations[language];
-
-  if (!mounted) {
-    return (
-      <main
-        className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background"
-        dir={direction}
-      >
-        <div className="relative z-10 w-full max-w-2xl mx-auto text-center">
-          <div className="animate-pulse">
-            <div className="h-8 w-32 bg-muted rounded-full mx-auto mb-8" />
-            <div className="h-40 w-72 bg-muted rounded-lg mx-auto mb-8" />
-            <div className="h-8 w-3/4 bg-muted rounded mx-auto mb-4" />
-            <div className="h-12 w-40 bg-muted rounded-2xl mx-auto" />
-          </div>
-        </div>
-      </main>
-    );
-  }
+  const t = translations.en;
 
   return (
     <main
       className="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden bg-background"
-      dir={direction}
+      dir="ltr"
     >
       <div
         className="fixed inset-0 flex items-center justify-center pointer-events-none select-none"
@@ -82,10 +46,10 @@ export default function NotFound() {
         aria-hidden="true"
       >
         <div
-          className={`absolute -top-32 ${language === "ar" ? "-left-32" : "-right-32"} w-[500px] h-[500px] sm:w-[600px] sm:h-[600px] rounded-full bg-gradient-to-br from-primary/10 to-primary/5 blur-[100px]`}
+          className="absolute -top-32 -right-32 w-[500px] h-[500px] sm:w-[600px] sm:h-[600px] rounded-full bg-gradient-to-br from-primary/10 to-primary/5 blur-[100px]"
         />
         <div
-          className={`absolute -bottom-32 ${language === "ar" ? "-right-32" : "-left-32"} w-[500px] h-[500px] sm:w-[600px] sm:h-[600px] rounded-full bg-gradient-to-tr from-accent/10 to-accent/5 blur-[100px]`}
+          className="absolute -bottom-32 -left-32 w-[500px] h-[500px] sm:w-[600px] sm:h-[600px] rounded-full bg-gradient-to-tr from-accent/10 to-accent/5 blur-[100px]"
           style={{ animationDelay: "1s" }}
         />
         <div
@@ -106,7 +70,7 @@ export default function NotFound() {
             <div className="w-full h-full bg-gradient-to-r from-primary via-accent to-primary rounded-full" />
           </div>
           <h1
-            className="relative text-[6rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-x"
+            className="not-found-title relative text-[6rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-transparent"
             style={{ textShadow: "0 0 80px hsl(var(--primary) / 0.3)" }}
           >
             404
@@ -124,7 +88,7 @@ export default function NotFound() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <Link
-            href={language === "ar" ? "/ar" : "/"}
+            href="/"
             className="inline-flex items-center justify-center gap-2 min-h-[52px] sm:min-h-[48px] px-8 rounded-2xl font-semibold text-sm bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-1.5 active:translate-y-0 transition-all duration-300"
           >
             <svg
@@ -133,7 +97,6 @@ export default function NotFound() {
               stroke="currentColor"
               strokeWidth="2"
               viewBox="0 0 24 24"
-              style={language === "ar" ? { transform: "scaleX(-1)" } : undefined}
             >
               <path
                 strokeLinecap="round"
@@ -159,6 +122,11 @@ export default function NotFound() {
 
         .animate-gradient-x {
           background-size: 200% 200%;
+          animation: gradient-x 4s ease infinite;
+        }
+
+        .not-found-title {
+          background-size: 200% auto;
           animation: gradient-x 4s ease infinite;
         }
 
@@ -193,7 +161,8 @@ export default function NotFound() {
         @media (prefers-reduced-motion: reduce) {
           .animate-gradient-x,
           .animate-spin-slow,
-          .animate-fade-in {
+          .animate-fade-in,
+          .not-found-title {
             animation: none !important;
           }
         }

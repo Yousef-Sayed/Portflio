@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Inter, Cairo } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import ConvexClientProvider from "@/components/ConvexClientProvider";
+import { LanguageProvider } from "@/components/LanguageProvider";
+import { ToastProvider } from "@/components/ui/toast";
 
 // Optimize fonts with subsets and display swap
 const inter = Inter({
@@ -121,7 +123,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    apple: "/icon.svg",
   },
   manifest: "/manifest.json",
   other: {
@@ -228,19 +230,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning className="light">
+    <html lang="en" suppressHydrationWarning className="light">
         <head>
-          {/* Preconnect to external resources - Critical for performance */}
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link rel="preconnect" href="https://images.unsplash.com" />
-          
-          {/* DNS prefetch for external resources */}
+          {/* DNS prefetch for resources that may be needed */}
           <link rel="dns-prefetch" href="https://github.com" />
-          <link rel="dns-prefetch" href="https://facebook.com" />
-          <link rel="dns-prefetch" href="https://platform.twitter.com" />
-          <link rel="dns-prefetch" href="https://api.clerk.com" />
           
           {/* Preload critical hero image */}
           <link 
@@ -253,22 +246,14 @@ export default function RootLayout({
           {/* PWA manifest */}
           <link rel="manifest" href="/manifest.json" />
           
-          {/* Favicon - Multiple sizes for different devices */}
+          {/* Favicon */}
           <link rel="icon" href="/favicon.ico" sizes="any" />
           <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+          <link rel="apple-touch-icon" href="/icon.svg" />
           <link rel="mask-icon" href="/icon.svg" color="#3E5D75" />
           
           {/* Canonical URL */}
           <link rel="canonical" href={siteUrl} />
-          
-          {/* RSS Feed */}
-          <link 
-            rel="alternate" 
-            type="application/rss+xml" 
-            title="YTech Solutions RSS Feed" 
-            href={`${siteUrl}rss.xml`} 
-          />
           
           {/* JSON-LD Structured Data - Load with defer for non-blocking */}
           <Script
@@ -278,6 +263,36 @@ export default function RootLayout({
               __html: JSON.stringify([organizationJsonLd, websiteJsonLd, personJsonLd], null, 2),
             }}
             strategy="afterInteractive"
+          />
+          
+          {/* Language initialization script - Critical for preventing FOUC and hydration mismatch */}
+          <Script
+            id="lang-init"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  try {
+                    var cookieLang = null;
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                      var cookie = cookies[i].trim();
+                      if (cookie.indexOf('ytech-locale=') === 0) {
+                        cookieLang = cookie.substring('ytech-locale='.length, cookie.length);
+                        break;
+                      }
+                    }
+                    var lang = cookieLang || localStorage.getItem('ytech-language') || 'en';
+                    var browserLang = navigator.language.split('-')[0];
+                    if (!cookieLang && lang === 'en' && browserLang === 'ar') {
+                      lang = 'ar';
+                    }
+                    document.documentElement.lang = lang;
+                    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                  } catch (e) {}
+                })();
+              `,
+            }}
+            strategy="beforeInteractive"
           />
           
           {/* Theme initialization script - Critical for preventing FOUC */}
@@ -324,9 +339,14 @@ export default function RootLayout({
           className={`${inter.variable} ${cairo.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}
           suppressHydrationWarning
         >
-          {children}
+          <LanguageProvider>
+            <ToastProvider>
+              <ConvexClientProvider>
+                {children}
+              </ConvexClientProvider>
+            </ToastProvider>
+          </LanguageProvider>
         </body>
       </html>
-    </ClerkProvider>
-  );
+    );
 }

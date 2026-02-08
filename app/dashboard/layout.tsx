@@ -1,8 +1,12 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export const dynamic = 'force-dynamic';
+
 import * as React from "react";
-import { useRouter } from "next/navigation";
-import { useQuery } from "convex/react";
+import { useRouter, usePathname } from "next/navigation";
+import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { DynamicFavicon } from "@/components/DynamicFavicon";
@@ -11,7 +15,6 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { UserButton, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
 import {
     Menu,
     Search,
@@ -42,15 +45,38 @@ import {
 function DashboardContent({ children }: { children: React.ReactNode }) {
     const { language, direction, setLanguage } = useLanguage();
     const router = useRouter();
+    const pathname = usePathname();
     const isRTL = direction === "rtl";
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [searchOpen, setSearchOpen] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState("");
 
+    // Check if user is authenticated via session token
+    const [sessionToken, setSessionToken] = React.useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+    const [authLoading, setAuthLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        // Get session token from localStorage
+        const token = localStorage.getItem("sessionToken");
+        setSessionToken(token);
+        setIsAuthenticated(!!token);
+        setAuthLoading(false);
+    }, []);
+
+    // Redirect to login if not authenticated
+    React.useEffect(() => {
+        if (!authLoading && !isAuthenticated && pathname !== "/login") {
+            router.push("/login");
+        }
+    }, [authLoading, isAuthenticated, pathname, router]);
+
     const messages = useQuery(api.messages.getAll) || [];
     const projects = useQuery(api.projects.getAll) || [];
     const skills = useQuery(api.skills.getAll) || [];
     const experience = useQuery(api.experience.getAll) || [];
+
+    const logout = useAction(api.authActions.logout);
 
     const t = {
         en: {
@@ -80,6 +106,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
             inSkills: "in Skills",
             inExperience: "in Experience",
             inMessages: "in Messages",
+            loading: "Loading...",
         },
         ar: {
             searchPlaceholder: "البحث في كل شيء...",
@@ -108,6 +135,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
             inSkills: "في المهارات",
             inExperience: "في الخبرات",
             inMessages: "في الرسائل",
+            loading: "جاري التحميل...",
         },
     };
 
@@ -218,17 +246,39 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         router.push(href);
     };
 
+    const handleLogout = async () => {
+        const token = localStorage.getItem("sessionToken");
+        if (token) {
+            await logout({ sessionToken: token });
+        }
+        localStorage.removeItem("sessionToken");
+        setIsAuthenticated(false);
+        router.push("/login");
+    };
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <p>{currentT.loading}</p>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return null;
+    }
+
     return (
         <>
             <DynamicFavicon />
             <div className="flex h-screen bg-background" dir={direction}>
                 <div className="hidden lg:flex shrink-0">
-                    <Sidebar />
+                    <Sidebar onLogout={handleLogout} />
                 </div>
 
                 <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                     <SheetContent side={isRTL ? "right" : "left"} className="p-0 w-72">
-                        <Sidebar onClose={() => setMobileOpen(false)} />
+                        <Sidebar onClose={() => setMobileOpen(false)} onLogout={handleLogout} />
                     </SheetContent>
                 </Sheet>
 
@@ -402,6 +452,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
                                 size="icon"
                                 className="lg:hidden h-9 w-9"
                                 onClick={() => setMobileOpen(true)}
+                                aria-label="Open menu"
                             >
                                 <Menu className="h-5 w-5" />
                             </Button>
@@ -438,9 +489,14 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
                             >
                                 <span className="text-sm font-medium">{language === "en" ? "ع" : "EN"}</span>
                             </Button>
-                            <div className="ml-1">
-                                <UserButton afterSignOutUrl="/" />
-                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleLogout}
+                                className="ml-1 h-9"
+                            >
+                                Logout
+                            </Button>
                         </div>
                     </header>
 
@@ -458,12 +514,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <ConvexClientProvider>
             <ThemeProvider defaultTheme="light" storageKey="ytech-theme">
                 <LanguageProvider>
-                    <SignedIn>
-                        <DashboardContent>{children}</DashboardContent>
-                    </SignedIn>
-                    <SignedOut>
-                        <RedirectToSignIn />
-                    </SignedOut>
+                    <DashboardContent>{children}</DashboardContent>
                 </LanguageProvider>
             </ThemeProvider>
         </ConvexClientProvider>

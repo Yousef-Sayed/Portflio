@@ -132,7 +132,8 @@ export async function GET(request: NextRequest) {
                 client.query(api.messages.getSetting, { key: "social_linkedin" }),
             ]);
 
-            projects = activeProjects.map((p) => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            projects = activeProjects.map((p: any) => ({
                 title: p.title,
                 description: p.description,
                 liveUrl: p.liveUrl,
@@ -142,7 +143,8 @@ export async function GET(request: NextRequest) {
                 tags: p.tags,
             }));
 
-            experience = activeExperience.map((e) => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            experience = activeExperience.map((e: any) => ({
                 role: e.role,
                 company: e.company,
                 period: e.period,
@@ -150,7 +152,8 @@ export async function GET(request: NextRequest) {
                 current: e.current,
             }));
 
-            skills = activeSkills.map((s) => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            skills = activeSkills.map((s: any) => ({
                 name: s.name,
                 category: s.category,
                 level: s.level,

@@ -1,20 +1,13 @@
 import { portfolioData } from "@/data/portfolio-data";
+
+export const dynamic = 'force-dynamic';
+
+// SSG is disabled due to Convex client requirements - pages are now SSR
 import { Metadata } from "next";
 import ProjectContent from "./ProjectContent";
 
 const siteUrl = "https://portflio-new-iota.vercel.app/";
 const siteName = "YTech Solutions";
-
-// SSG: Pre-render all project pages
-export async function generateStaticParams() {
-    const slugs = new Set<string>();
-    Object.values(portfolioData).forEach(langData => {
-        langData.projects.forEach(p => {
-            if (p.slug) slugs.add(p.slug);
-        });
-    });
-    return Array.from(slugs).map(slug => ({ slug }));
-}
 
 // SEO: Enhanced Dynamic Metadata for projects
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

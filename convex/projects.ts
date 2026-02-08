@@ -233,7 +233,7 @@ export const seedProjects = mutation({
                 descriptionAr: "نظام إدارة جامعي يتميز بواجهة React وخلفية Laravel. يتضمن نظاماً مرناً لإدارة المحتوى ولوحة تحكم قوية للإدارة الأكاديمية.",
                 image: "https://images.unsplash.com/photo-1562774053-701939374585?w=800&q=80",
                 tags: ["React", "Laravel", "PHP", "Laravel Nova", "API"],
-                liveUrl: "https://hesperides-website.vercel.app/ar",
+                liveUrl: "https://hesperides-website.vercel.app/",
                 featured: true,
                 active: true,
                 order: 4,

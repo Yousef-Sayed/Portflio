@@ -396,13 +396,13 @@ export default function HeroSettingsPage() {
                         <Type className="w-4 h-4" />
                         {t.tabs.content}
                     </TabsTrigger>
-                    <TabsTrigger value="media" className="gap-2">
-                        <ImageIcon className="w-4 h-4" />
-                        {t.tabs.media}
-                    </TabsTrigger>
                     <TabsTrigger value="resume" className="gap-2">
                         <FileText className="w-4 h-4" />
                         {t.tabs.resume}
+                    </TabsTrigger>
+                    <TabsTrigger value="media" className="gap-2">
+                        <ImageIcon className="w-4 h-4" />
+                        {t.tabs.media}
                     </TabsTrigger>
                     <TabsTrigger value="stats" className="gap-2">
                         <BarChart3 className="w-4 h-4" />

@@ -1,9 +1,11 @@
-import dynamic from 'next/dynamic';
 import type { Metadata } from 'next';
 
 const siteUrl = "https://portflio-new-iota.vercel.app/";
 const siteName = "YTech Solutions";
 const ogImage = `${siteUrl}og-image.png`;
+
+// Disable static generation to avoid Convex prerendering issues
+export const dynamic = 'force-dynamic';
 
 // SEO: Enhanced metadata for main page with comprehensive Open Graph and Twitter cards
 export const metadata: Metadata = {
@@ -51,34 +53,14 @@ export const metadata: Metadata = {
   },
 };
 
-// Lazy load below-the-fold components for better LCP and performance
-const Hero = dynamic(() => import("@/components/Hero").then(mod => mod.Hero), {
-  ssr: true,
-  loading: () => <div className="min-h-screen animate-pulse bg-secondary/10" />
-});
-
-const About = dynamic(() => import("@/components/About").then(mod => mod.About), {
-  ssr: true,
-  loading: () => <div className="h-96 animate-pulse bg-secondary/10" />
-});
-
-const Portfolio = dynamic(() => import("@/components/Portfolio").then(mod => mod.Portfolio), {
-  ssr: true,
-  loading: () => <div className="h-96 animate-pulse bg-secondary/10" />
-});
-
-const Contact = dynamic(() => import("@/components/Contact").then(mod => mod.Contact), {
-  ssr: true,
-  loading: () => <div className="h-96 animate-pulse bg-secondary/10" />
-});
+import { Hero } from "@/components/Hero";
+import { DynamicContent } from "@/components/DynamicContent";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <About />
-      <Portfolio />
-      <Contact />
+      <DynamicContent />
     </>
   );
 }
