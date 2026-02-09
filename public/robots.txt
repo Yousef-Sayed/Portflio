@@ -9,3 +9,6 @@ Sitemap: https://yousef-abdrabboh.vercel.app/sitemap.xml
 
 # Disallow admin/api routes if any
 Disallow: /api/
+
+# Disallow dashboard (private admin area)
+Disallow: /dashboard/

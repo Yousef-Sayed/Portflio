@@ -510,6 +510,17 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+    // Inject noindex meta tag to prevent search engine indexing
+    React.useEffect(() => {
+        const meta = document.createElement('meta');
+        meta.name = 'robots';
+        meta.content = 'noindex, nofollow';
+        document.head.appendChild(meta);
+        return () => {
+            document.head.removeChild(meta);
+        };
+    }, []);
+
     return (
         <ConvexClientProvider>
             <ThemeProvider defaultTheme="light" storageKey="ytech-theme">
