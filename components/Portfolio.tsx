@@ -25,7 +25,7 @@ export function Portfolio() {
     // Map Convex projects to the expected format with language support
     const dynamicProjects: Project[] = React.useMemo(() => {
         if (!convexProjects || convexProjects.length === 0) return [];
-        
+
         return convexProjects.map(p => ({
             id: p._id,
             slug: p.slug,
@@ -67,11 +67,10 @@ export function Portfolio() {
                     <AnimatePresence mode="popLayout">
                         {projects.map((project, index) => (
                             <m.div
-                                layout
                                 initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                viewport={{ once: true, margin: "-100px" }}
+                                transition={{ duration: 0.5, delay: Math.min(index * 0.1, 0.3) }}
                                 key={project.id}
                                 className="group"
                             >
@@ -93,8 +92,9 @@ export function Portfolio() {
                                                 src={project.image}
                                                 alt={language === 'ar' ? `لقطة شاشة لمشروع ${project.title}` : `Screenshot of ${project.title} project`}
                                                 fill
+                                                loading="lazy"
                                                 className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                sizes="(max-width: 768px) 95vw, (max-width: 1200px) 45vw, 30vw"
                                             />
                                             <div className="absolute inset-0 bg-black/20 group-hover/img:bg-black/0 transition-colors" />
                                         </Link>

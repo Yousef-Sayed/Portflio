@@ -38,48 +38,69 @@ export function Navbar() {
     const displaySiteName = siteName || t.personalInfo.name.split(' ')[0];
 
     useMotionValueEvent(scrollY, "change", (latest) => {
-        setIsScrolled(latest > 20);
+        const isScrolledNow = latest > 20;
+        if (isScrolledNow !== isScrolled) {
+            setIsScrolled(isScrolledNow);
+        }
     });
 
     const isHome = pathname === "/";
 
-    // Active section observer - Use IntersectionObserver only (more efficient than scroll)
+    // Active section observer - deferred setup to reduce TBT
     React.useEffect(() => {
         if (!isHome) return;
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setActiveSection(entry.target.id);
-                    }
-                });
-            },
-            { threshold: 0.3, rootMargin: "-50% 0px -50% 0px" }
-        );
+        let observer: IntersectionObserver | null = null;
 
-        navLinks.forEach((link) => {
-            if (link.href.startsWith("/")) return;
-            const element = document.getElementById(link.href.replace("#", ""));
-            if (element) {
-                observer.observe(element);
-            }
-        });
+        // Defer observer setup to when browser is idle
+        const setupObserver = () => {
+            observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            setActiveSection(entry.target.id);
+                        }
+                    });
+                },
+                { threshold: 0.3, rootMargin: "-50% 0px -50% 0px" }
+            );
+
+            navLinks.forEach((link) => {
+                if (link.href.startsWith("/")) return;
+                const element = document.getElementById(link.href.replace("#", ""));
+                if (element && observer) {
+                    observer.observe(element);
+                }
+            });
+        };
+
+        // Use requestIdleCallback if available, otherwise use setTimeout
+        let handle: ReturnType<typeof setTimeout> | number;
+        if ('requestIdleCallback' in window) {
+            handle = (window as Window & typeof globalThis & { requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback(setupObserver, { timeout: 300 });
+        } else {
+            handle = setTimeout(setupObserver, 100);
+        }
 
         return () => {
-            observer.disconnect();
+            if ('requestIdleCallback' in window && typeof handle === 'number') {
+                (window as Window & typeof globalThis & { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(handle);
+            } else {
+                clearTimeout(handle as ReturnType<typeof setTimeout>);
+            }
+            observer?.disconnect();
         };
     }, [navLinks, isHome]);
 
     const scrollTo = (href: string) => {
         const id = href.replace("#", "");
-        
+
         // Handle dashboard link
         if (href === "/dashboard" || href.startsWith("/dashboard")) {
             router.push("/dashboard");
             return;
         }
-        
+
         if (isHome) {
             setActiveSection(id);
             const element = document.getElementById(id);
@@ -116,8 +137,8 @@ export function Navbar() {
                         <div className="absolute inset-0 bg-primary/20 rounded-xl group-hover:rotate-12 transition-transform duration-300" />
                         {logo ? (
                             <div className="relative w-8 h-8 rounded-lg overflow-hidden shadow-lg">
-                                <img 
-                                    src={logo} 
+                                <img
+                                    src={logo}
                                     alt={displaySiteName}
                                     className="w-full h-full object-cover"
                                 />
@@ -144,7 +165,7 @@ export function Navbar() {
                 <nav className="hidden md:flex items-center gap-1">
                     {navLinks.map((link) => {
                         const isDashboard = link.href.startsWith("/") && !link.href.startsWith("#");
-                        const isActive = isDashboard 
+                        const isActive = isDashboard
                             ? pathname === link.href || pathname.startsWith(link.href + "/")
                             : activeSection === link.href.replace("#", "");
                         return (

@@ -17,21 +17,37 @@ export function MainLayout({ children }: { children: ReactNode }) {
     const isDashboard = pathname?.startsWith("/dashboard");
     const isNotFoundPage = pathname === "/not-found";
 
-    // Hide navbar and footer on 404 page using data attribute
+    // Hide navbar and footer on 404 page using data attribute - optimized to prevent layout thrashing
     useEffect(() => {
         if (isNotFoundPage) {
-            // Add data attribute to body to style accordingly
-            document.body.setAttribute("data-page", "404");
-            
-            // Hide any existing nav/header/footer elements immediately
-            const elements = document.querySelectorAll('[class*="fixed top-0 left-0 right-0 z-50"]');
-            elements.forEach(el => {
-                (el as HTMLElement).style.display = "none";
-            });
-            
-            const footers = document.querySelectorAll("footer");
-            footers.forEach(el => {
-                (el as HTMLElement).style.display = "none";
+            // Use requestIdleCallback for non-critical DOM updates, or fallback to setTimeout
+            const scheduleUpdate = (callback: () => void) => {
+                if ('requestIdleCallback' in window) {
+                    (window as Window & typeof globalThis & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(callback, { timeout: 100 });
+                } else {
+                    setTimeout(callback, 0);
+                }
+            };
+
+            scheduleUpdate(() => {
+                // Add data attribute to body to style accordingly
+                document.body.setAttribute("data-page", "404");
+
+                // Batch all DOM reads first, then writes to avoid layout thrashing
+                requestAnimationFrame(() => {
+                    // Hide any existing nav/header/footer elements
+                    const navElements = document.querySelectorAll('[class*="fixed top-0 left-0 right-0 z-50"]');
+                    const footers = document.querySelectorAll("footer");
+
+                    // Batch all writes together
+                    navElements.forEach(el => {
+                        (el as HTMLElement).style.display = "none";
+                    });
+
+                    footers.forEach(el => {
+                        (el as HTMLElement).style.display = "none";
+                    });
+                });
             });
         }
     }, [isNotFoundPage, pathname]);

@@ -324,3 +324,38 @@ body[data-page="404"] footer {
 [data-hide-on-404] {
   display: none;
 }
+
+/* Performance Optimizations */
+
+/* Enable content-visibility for below-the-fold sections */
+/* This tells the browser to skip rendering until the section is near viewport */
+#about,
+#portfolio,
+#contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Containment for isolated paint work - improves rendering performance */
+.glass,
+.card {
+  contain: content;
+}
+
+/* Optimize image rendering */
+img {
+  content-visibility: auto;
+}
+
+/* Optimize animations by compositing layers */
+.animate-pulse,
+.animate-spin-slow,
+.animate-gradient-x {
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+/* Reduce paint complexity on hover states by creating a new layer */
+.group:hover > * {
+  will-change: auto; /* Reset will-change after use to free GPU memory */
+}

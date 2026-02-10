@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export const dynamic = 'force-dynamic';
+// Static generation enabled for better performance (SSG)
+// export const dynamic = 'force-dynamic';
 
 const translations = {
   en: {

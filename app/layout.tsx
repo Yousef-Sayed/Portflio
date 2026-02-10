@@ -231,45 +231,46 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="light">
-        <head>
-          {/* DNS prefetch for resources that may be needed */}
-          <link rel="dns-prefetch" href="https://github.com" />
-          
-          {/* Preload critical hero image */}
-          <link 
-            rel="preload" 
-            href="/my-image-without-background.png" 
-            as="image" 
-            type="image/png" 
-          />
-          
-          {/* PWA manifest */}
-          <link rel="manifest" href="/manifest.json" />
-          
-          {/* Favicon */}
-          <link rel="icon" href="/favicon.ico" sizes="any" />
-          <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-          <link rel="apple-touch-icon" href="/icon.svg" />
-          <link rel="mask-icon" href="/icon.svg" color="#3E5D75" />
-          
-          {/* Canonical URL */}
-          <link rel="canonical" href={siteUrl} />
-          
-          {/* JSON-LD Structured Data - Load with defer for non-blocking */}
-          <Script
-            id="organization-website-jsonld"
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify([organizationJsonLd, websiteJsonLd, personJsonLd], null, 2),
-            }}
-            strategy="afterInteractive"
-          />
-          
-          {/* Language initialization script - Critical for preventing FOUC and hydration mismatch */}
-          <Script
-            id="lang-init"
-            dangerouslySetInnerHTML={{
-              __html: `
+      <head>
+        {/* DNS prefetch for resources that may be needed */}
+        <link rel="dns-prefetch" href="https://github.com" />
+
+        {/* Preload critical hero image with fetchpriority for LCP optimization */}
+        <link
+          rel="preload"
+          href="/my-image-without-background.png"
+          as="image"
+          type="image/png"
+          fetchPriority="high"
+        />
+
+        {/* PWA manifest */}
+        <link rel="manifest" href="/manifest.json" />
+
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="mask-icon" href="/icon.svg" color="#3E5D75" />
+
+        {/* Canonical URL */}
+        <link rel="canonical" href={siteUrl} />
+
+        {/* JSON-LD Structured Data - Load with defer for non-blocking */}
+        <Script
+          id="organization-website-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([organizationJsonLd, websiteJsonLd, personJsonLd], null, 2),
+          }}
+          strategy="afterInteractive"
+        />
+
+        {/* Language initialization script - Critical for preventing FOUC and hydration mismatch */}
+        <Script
+          id="lang-init"
+          dangerouslySetInnerHTML={{
+            __html: `
                 (function() {
                   try {
                     var cookieLang = null;
@@ -291,15 +292,15 @@ export default function RootLayout({
                   } catch (e) {}
                 })();
               `,
-            }}
-            strategy="beforeInteractive"
-          />
-          
-          {/* Theme initialization script - Critical for preventing FOUC */}
-          <Script
-            id="theme-init"
-            dangerouslySetInnerHTML={{
-              __html: `
+          }}
+          strategy="beforeInteractive"
+        />
+
+        {/* Theme initialization script - Critical for preventing FOUC */}
+        <Script
+          id="theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `
                 (function() {
                   try {
                     var theme = localStorage.getItem('ytech-theme');
@@ -314,39 +315,39 @@ export default function RootLayout({
                   } catch (e) {}
                 })();
               `,
-            }}
-            strategy="beforeInteractive"
-          />
-          
-          {/* Defer non-critical analytics to lazyOnload */}
-          {process.env.NEXT_PUBLIC_CLARITY_ID && (
-            <Script
-              id="clarity"
-              strategy="lazyOnload"
-              dangerouslySetInnerHTML={{
-                __html: `
+          }}
+          strategy="beforeInteractive"
+        />
+
+        {/* Defer non-critical analytics to lazyOnload */}
+        {process.env.NEXT_PUBLIC_CLARITY_ID && (
+          <Script
+            id="clarity"
+            strategy="lazyOnload"
+            dangerouslySetInnerHTML={{
+              __html: `
                   (function(c,l,a,r,i,t,y){
                     c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
                     t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
                     y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
                   })(window,document,"clarity","script","${process.env.NEXT_PUBLIC_CLARITY_ID}");
                 `,
-              }}
-            />
-          )}
-        </head>
-        <body
-          className={`${inter.variable} ${cairo.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}
-          suppressHydrationWarning
-        >
-          <LanguageProvider>
-            <ToastProvider>
-              <ConvexClientProvider>
-                {children}
-              </ConvexClientProvider>
-            </ToastProvider>
-          </LanguageProvider>
-        </body>
-      </html>
-    );
+            }}
+          />
+        )}
+      </head>
+      <body
+        className={`${inter.variable} ${cairo.variable} antialiased bg-background text-foreground transition-colors duration-300 font-sans`}
+        suppressHydrationWarning
+      >
+        <LanguageProvider>
+          <ToastProvider>
+            <ConvexClientProvider>
+              {children}
+            </ConvexClientProvider>
+          </ToastProvider>
+        </LanguageProvider>
+      </body>
+    </html>
+  );
 }

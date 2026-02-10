@@ -4,8 +4,8 @@ const siteUrl = "https://portflio-new-iota.vercel.app/";
 const siteName = "YTech Solutions";
 const ogImage = `${siteUrl}og-image.png`;
 
-// Disable static generation to avoid Convex prerendering issues
-export const dynamic = 'force-dynamic';
+// Static generation enabled for better performance (SSG)
+// export const dynamic = 'force-dynamic';
 
 // SEO: Enhanced metadata for main page with comprehensive Open Graph and Twitter cards
 export const metadata: Metadata = {

@@ -26,9 +26,11 @@ const nextConfig: NextConfig = {
 
   // Production optimizations
   experimental: {
+    // Inline CSS to eliminate render-blocking CSS requests
+    inlineCss: true,
     // Optimize package imports for smaller bundles
     optimizePackageImports: [
-      "lucide-react", 
+      "lucide-react",
       "framer-motion",
       "@radix-ui/react-dialog",
       "@radix-ui/react-select",
@@ -43,6 +45,10 @@ const nextConfig: NextConfig = {
       "tailwind-merge",
     ],
   },
+
+  // Enable React Compiler for automatic memoization (reduces main thread work)
+  // @ts-ignore - The error message indicates this has moved to the root level
+  reactCompiler: true,
 
   // Server-only packages (native/WASM modules)
   serverExternalPackages: ["mupdf"],
@@ -82,7 +88,7 @@ const nextConfig: NextConfig = {
       },
       // Cache static assets aggressively
       {
-        source: "/(.*)\\.(ico|png|jpg|jpeg|gif|svg|webp|avif|woff|woff2)",
+        source: "/(.*)\\.(ico|png|jpg|jpeg|gif|svg|webp|avif|woff|woff2|css|js)",
         headers: [
           {
             key: "Cache-Control",
