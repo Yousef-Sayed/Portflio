@@ -101,4 +101,4 @@ export const dashboardData = {
     },
 };
 
-export type DashboardTranslations = typeof dashboardData.en;
+type DashboardTranslations = typeof dashboardData.en;

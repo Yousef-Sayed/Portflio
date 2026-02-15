@@ -26,7 +26,7 @@ export interface Skill {
     level: number;
 }
 
-export interface SocialLink {
+interface SocialLink {
     name: string;
     url: string;
     icon: string;
